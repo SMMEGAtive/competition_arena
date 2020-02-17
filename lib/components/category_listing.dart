@@ -62,7 +62,45 @@ class _CategoryListingState extends State<CategoryListing> {
       ],
     );
 
-    return listing;
+    Widget a = Container(
+      height: 90,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(top: 5, left: 5),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.horizontal(
+                  left: Radius.circular(10),
+                ),
+              ),
+              child: lvSelected,
+            ),
+          ),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(top: 5, left: 5),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.horizontal(
+                  right: Radius.circular(10),
+                ),
+              ),
+              child: lvUnselected,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return a;
   }
 
   rebuildUnselected() {
@@ -96,19 +134,17 @@ class _CategoryListingState extends State<CategoryListing> {
       scrollDirection: Axis.vertical,
       //Buat build list
       itemBuilder: (context, index) {
-        return Container(
-          child: CategoryItem(
-            name: listSelected[index],
-            onPress: () {
-              listUnselected.add(listSelected[index]);
-              listSelected.removeAt(index);
+        return CategoryItem(
+          name: listSelected[index],
+          onPress: () {
+            listUnselected.add(listSelected[index]);
+            listSelected.removeAt(index);
 
-              setState(() {
-                rebuildUnselected();
-                rebuildSelected();
-              });
-            },
-          ),
+            setState(() {
+              rebuildUnselected();
+              rebuildSelected();
+            });
+          },
         );
       },
     );
