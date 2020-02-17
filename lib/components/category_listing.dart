@@ -15,54 +15,27 @@ class _CategoryListingState extends State<CategoryListing> {
     var lvUnselected = rebuildUnselected();
     var lvSelected = rebuildSelected();
 
-    Widget listing = Row(
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.only(top: 5, left: 5),
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 1,
-            ),
-            borderRadius: BorderRadius.horizontal(
-              left: Radius.circular(10),
-            ),
-          ),
-          child: lvSelected,
+    Widget searchBox = Container(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 3,
         ),
-        Container(
-          padding: EdgeInsets.only(top: 5, left: 5),
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 1,
-            ),
-            borderRadius: BorderRadius.horizontal(
-              right: Radius.circular(10),
-            ),
-          ),
-          child: lvUnselected,
-        ),
-      ],
-    );
-
-    Widget searchBox = Expanded(
-      child: TextField(),
-    );
-
-    Widget searchTerm = Expanded(
-      child: Text(
-        getSelectedList(),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: TextField(
+        decoration: InputDecoration(labelText: 'Masukkan kata kunci...'),
       ),
     );
 
-    Widget search = Row(
-      children: <Widget>[
-        searchBox,
-        searchTerm,
-        listing,
-      ],
+    Widget searchTerm = Container(
+      margin: EdgeInsets.symmetric(vertical: 10),
+      child: Text(
+        'Kategori yang dipilih: ' + getSelectedList(),
+      ),
     );
 
-    Widget a = Container(
+    Widget listing = Container(
       height: 90,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -100,7 +73,18 @@ class _CategoryListingState extends State<CategoryListing> {
       ),
     );
 
-    return a;
+    Widget search = Container(
+      padding: EdgeInsets.all(15.0),
+      child: Column(
+        children: <Widget>[
+          searchBox,
+          searchTerm,
+          listing,
+        ],
+      ),
+    );
+
+    return search;
   }
 
   rebuildUnselected() {
