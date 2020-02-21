@@ -1,3 +1,4 @@
+import 'package:competition_arena/view/competition.dart';
 import 'package:flutter/material.dart';
 
 class CompetitionItem extends StatelessWidget {
@@ -51,6 +52,18 @@ class CompetitionItem extends StatelessWidget {
       ),
     );
 
-    return item;
+    var linkItem = InkWell(
+      child: item,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Competition(),
+          ),
+        );
+      },
+    );
+
+    return linkItem;
   }
 }
