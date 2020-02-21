@@ -1,5 +1,6 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
 import 'package:competition_arena/components/category_listing.dart';
+import 'package:competition_arena/components/competition_list.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -17,15 +18,9 @@ class _HomeState extends State<Home> {
         title: "Competition Arena",
         hasBackButton: false,
       ),
-      body: CategoryListing() /* Flex(
-        direction: Axis.vertical,
-        children: <Widget>[
-          Expanded(
-            child: CategoryListing(),
-            flex: 0,
-          )
-        ],
-      ) */,
+      body: Column(
+        children: <Widget>[CategoryListing(), CompetitionList()],
+      ),
     );
   }
 }
