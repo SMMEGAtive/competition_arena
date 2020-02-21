@@ -11,7 +11,7 @@ class _CompetitionListState extends State<CompetitionList> {
   Widget build(BuildContext context) {
     var list = ListView.builder(
       //itemCount harus dibikin dinamis nanti
-      itemCount: 3,
+      itemCount: 6,
       scrollDirection: Axis.vertical,
 
       //Buat build list
@@ -41,6 +41,6 @@ class _CompetitionListState extends State<CompetitionList> {
       ),
     );
 
-    return fullList;
+    return list;
   }
 }

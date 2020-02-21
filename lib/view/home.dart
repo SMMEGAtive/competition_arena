@@ -19,7 +19,12 @@ class _HomeState extends State<Home> {
         hasBackButton: false,
       ),
       body: Column(
-        children: <Widget>[CategoryListing(), CompetitionList()],
+        children: <Widget>[
+          CategoryListing(),
+          Flexible(
+            child: CompetitionList(),
+          )
+        ],
       ),
     );
   }
