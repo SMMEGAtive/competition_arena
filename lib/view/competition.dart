@@ -21,7 +21,14 @@ class Competition extends StatelessWidget {
               child: Text('Description'),
             ),
           ),
-          Text('')
+          Stack(
+            children: <Widget>[
+              Align(
+                alignment: FractionalOffset.bottomCenter,
+                child: Container(child: Text('Bottom Bar')),
+              ),
+            ],
+          ),
         ],
       ),
     );
