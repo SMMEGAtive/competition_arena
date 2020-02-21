@@ -19,13 +19,12 @@ class CompetitionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget item = Container(
+      margin: EdgeInsets.all(15),
       decoration: BoxDecoration(
         border: Border.all(
           width: 2,
         ),
-        borderRadius: BorderRadius.horizontal(
-          left: Radius.circular(10),
-        ),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: Row(
         children: <Widget>[
