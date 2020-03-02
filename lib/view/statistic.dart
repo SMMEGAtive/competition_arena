@@ -9,6 +9,6 @@ class _StatisticState extends State<Statistic> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return null;
+    return Text('Statistic');
   }
 }
