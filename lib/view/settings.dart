@@ -122,7 +122,6 @@ class SettingsItem extends StatelessWidget {
 class SettingsItemSpace extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Container(
       height: 40,
     );
