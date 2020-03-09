@@ -17,7 +17,6 @@ class ButtonCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     Widget image;
     if (icon != null) {
       image = Container(
@@ -32,35 +31,41 @@ class ButtonCustom extends StatelessWidget {
 
     return Container(
       margin: EdgeInsets.only(top: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(
+          Radius.circular(10),
+        ),
+      ),
       child: Row(
         children: <Widget>[
-          Container(
-            width: 306,
-            height: 50,
-            child: Material(
-              elevation: 4,
-              child: RaisedButton(
-                onPressed: onPress,
-                elevation: 0.5,
+          Expanded(
+            child: Container(
+              width: double.maxFinite,
+              height: 50,
+              child: Material(
+                elevation: 4,
                 color: color,
-                child: Row(
-                  children: <Widget>[
-                    image,
-                    Container(
-                      width: 235,
-                      height: 16,
-                      child: Text(
-                        text,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Segoe UI',
-                          color: Color.fromRGBO(109, 103, 103, 1),
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                child: InkWell(
+                  onTap: onPress,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      image,
+                      Container(
+                        child: Text(
+                          text,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Segoe UI',
+                            color: Color.fromRGBO(109, 103, 103, 1),
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -81,7 +86,7 @@ class ButtonPrimary extends StatelessWidget {
   Widget build(BuildContext context) {
     return ButtonCustom(
       text: text,
-      color: ColorPalette.lightBlue_300,
+      color: ColorPalette.lightBlue_100,
       onPress: onPress,
     );
   }

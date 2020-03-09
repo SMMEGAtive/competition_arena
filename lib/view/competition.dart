@@ -1,4 +1,5 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
+import 'package:competition_arena/values/color_palette.dart';
 import 'package:competition_arena/view/chat.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +20,10 @@ class Competition extends StatelessWidget {
                 ),
               );
             },
-            child: Text('Chat'),
+            child: Text(
+              'Chat',
+              style: TextStyle(color: ColorPalette.black, fontSize: 28),
+            ),
           )
         ],
       ),
@@ -31,11 +35,17 @@ class Competition extends StatelessWidget {
                 height: 200,
                 child: Stack(
                   children: <Widget>[
-                    Image.network(
-                      'https://rhythmega.s-ul.eu/KGwwejMs',
-                      fit: BoxFit.cover,
-                      color: Color.fromRGBO(255, 255, 255, 0.15),
-                      colorBlendMode: BlendMode.modulate,
+                    Opacity(
+                      opacity: 0.15,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          image: new DecorationImage(
+                            fit: BoxFit.cover,
+                            image: new NetworkImage(
+                                'https://rhythmega.s-ul.eu/y4E3hmm6'),
+                          ),
+                        ),
+                      ),
                     ),
                     Positioned(
                       child: Text(

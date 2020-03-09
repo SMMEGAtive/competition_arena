@@ -1,4 +1,5 @@
 import 'package:competition_arena/view/home.dart';
+import 'package:competition_arena/view/login.dart';
 import 'package:competition_arena/view/primary_page.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: PrimaryPage(),
+      home: Login(),
     );
   }
 }
