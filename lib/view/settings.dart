@@ -11,83 +11,30 @@ class _SettingsState extends State<Settings> {
     return Container(
       child: Column(
         children: <Widget>[
-          InkWell(
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(width: 2),
-                  bottom: BorderSide(width: 1),
-                ),
-              ),
-              child: Text('Edit Profil'),
-            ),
+          SettingsItem(
+            text: 'Edit Profil',
+            onPress: () {},
           ),
-          InkWell(
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(width: 2),
-                  bottom: BorderSide(width: 1),
-                ),
-              ),
-              child: Text('Ubah Password'),
-            ),
+          SettingsItem(
+            text: 'Ubah Password',
+            onPress: () {},
           ),
-          InkWell(
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(width: 2),
-                  bottom: BorderSide(width: 1),
-                ),
-              ),
-              child: Text('Request Ubah Role'),
-            ),
+          SettingsItem(
+            text: 'Request Ubah Role',
+            onPress: () {},
           ),
-          InkWell(
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(width: 2),
-                  bottom: BorderSide(width: 2),
-                ),
-              ),
-              child: Text('Syarat dan Ketentuan'),
-            ),
+          SettingsItemSpace(),
+          SettingsItem(
+            text: 'Syarat dan Ketentuan',
+            onPress: () {},
           ),
-          InkWell(
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(width: 2),
-                  bottom: BorderSide(width: 2),
-                ),
-              ),
-              child: Text('Kebijakan Privasi'),
-            ),
+          SettingsItem(
+            text: 'Kebijakan Privasi',
+            onPress: () {},
           ),
-          InkWell(
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(width: 2),
-                  bottom: BorderSide(width: 2),
-                ),
-              ),
-              child: Text('Bantuan'),
-            ),
+          SettingsItem(
+            text: 'Bantuan',
+            onPress: () {},
           ),
         ],
       ),
@@ -139,6 +86,45 @@ class _SettingsState extends State<Settings> {
           view
         ],
       ),
+    );
+  }
+}
+
+class SettingsItem extends StatelessWidget {
+  final String text;
+  final Function onPress;
+
+  SettingsItem({
+    Key key,
+    this.text,
+    this.onPress,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(width: 1),
+            bottom: BorderSide(width: 1),
+          ),
+        ),
+        child: Text(text),
+      ),
+      onTap: onPress,
+    );
+  }
+}
+
+class SettingsItemSpace extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Container(
+      height: 40,
     );
   }
 }
