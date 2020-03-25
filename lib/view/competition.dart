@@ -90,6 +90,7 @@ class Competition extends StatelessWidget {
             child: Align(
               alignment: FractionalOffset.bottomCenter,
               child: Container(
+                color: ColorPalette.black,
                 width: 300,
                 padding: EdgeInsets.all(10),
                 child: RaisedButton(

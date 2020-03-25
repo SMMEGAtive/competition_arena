@@ -36,6 +36,11 @@ class _SettingsState extends State<Settings> {
             text: 'Bantuan',
             onPress: () {},
           ),
+          SettingsItemSpace(),
+          SettingsItem(
+            text: 'Keluar',
+            onPress: () {},
+          ),
         ],
       ),
     );

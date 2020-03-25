@@ -20,7 +20,7 @@ class CompetitionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget item = Container(
-      margin: EdgeInsets.all(15),
+      margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       decoration: BoxDecoration(
         border: Border.all(
           width: 2,

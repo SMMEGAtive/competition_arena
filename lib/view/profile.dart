@@ -17,18 +17,19 @@ class _ProfileState extends State<Profile> {
         hasBackButton: false,
         actions: <Widget>[
           InkWell(
-              child: Text(
-                'Settings',
-                style: TextStyle(fontSize: 20, color: ColorPalette.black),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Settings(),
-                  ),
-                );
-              })
+            child: Text(
+              'Settings',
+              style: TextStyle(fontSize: 20, color: ColorPalette.black),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Settings(),
+                ),
+              );
+            },
+          )
         ],
       ),
       body: Align(
@@ -59,9 +60,37 @@ class _ProfileState extends State<Profile> {
                 ),
               ],
             ),
-            Text('MEGAtive'),
-            Text('Administrator'),
-            Text('Tab')
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 10.0),
+              child: Column(
+                children: <Widget>[
+                  Text('MEGAtive'),
+                  Text('Administrator'),
+                ],
+              ),
+            ),
+            DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                appBar: AppBar(
+                  bottom: TabBar(
+                    tabs: [
+                      Tab(child: Text('Deskripsi'),),
+                      Tab(child: Text('Lomba yang sedang diikuti'),),
+                      Tab(child: Text('Lomba yang pernah diikuti'),),
+                    ],
+                  ),
+                  title: Text('Tabs Demo'),
+                ),
+                body: TabBarView(
+                  children: [
+                    Icon(Icons.directions_car),
+                    Icon(Icons.directions_transit),
+                    Icon(Icons.directions_bike),
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       ),
