@@ -39,7 +39,7 @@ class _FeedState extends State<Feed> {
     ),
   );
 
-  var item = Container(
+  var item = Flexible(
     child: CompetitionList(),
   );
 
@@ -53,7 +53,7 @@ class _FeedState extends State<Feed> {
       body: Container(
         child: Column(
           children: <Widget>[
-            option,
+            Container(child: option),
             item,
           ],
         ),
