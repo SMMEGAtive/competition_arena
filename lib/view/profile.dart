@@ -37,57 +37,78 @@ class _ProfileState extends State<Profile> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Stack(
-              children: <Widget>[
-                Container(
-                  height: 200,
-                  color: ColorPalette.gray_400,
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: new DecorationImage(
-                        fit: BoxFit.cover,
-                        image: new NetworkImage(
-                            'https://rhythmega.s-ul.eu/lBdht0Rt'),
+            Container(
+              height: 200,
+              color: ColorPalette.gray_400,
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    height: 200,
+                    color: ColorPalette.gray_400,
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: new DecorationImage(
+                          fit: BoxFit.cover,
+                          image: new NetworkImage(
+                              'https://rhythmega.s-ul.eu/lBdht0Rt'),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Container(
-              margin: EdgeInsets.symmetric(vertical: 10.0),
+              margin: EdgeInsets.symmetric(vertical: 20.0),
               child: Column(
                 children: <Widget>[
-                  Text('MEGAtive'),
+                  Text(
+                    'MEGAtive',
+                    style: TextStyle(fontSize: 24),
+                  ),
                   Text('Administrator'),
                 ],
               ),
             ),
-            DefaultTabController(
-              length: 3,
-              child: Scaffold(
-                appBar: AppBar(
-                  bottom: TabBar(
+            Expanded(
+              child: DefaultTabController(
+                length: 3,
+                child: Scaffold(
+                  appBar: TabBar(
                     tabs: [
-                      Tab(child: Text('Deskripsi'),),
-                      Tab(child: Text('Lomba yang sedang diikuti'),),
-                      Tab(child: Text('Lomba yang pernah diikuti'),),
+                      Tab(
+                        child: Text(
+                          'Deskripsi',
+                          style: TextStyle(color: ColorPalette.black),
+                        ),
+                      ),
+                      Tab(
+                        child: Text(
+                          'Lomba yang sedang diikuti',
+                          style: TextStyle(color: ColorPalette.black),
+                        ),
+                      ),
+                      Tab(
+                        child: Text(
+                          'Lomba yang pernah diikuti',
+                          style: TextStyle(color: ColorPalette.black),
+                        ),
+                      ),
                     ],
                   ),
-                  title: Text('Tabs Demo'),
-                ),
-                body: TabBarView(
-                  children: [
-                    Icon(Icons.directions_car),
-                    Icon(Icons.directions_transit),
-                    Icon(Icons.directions_bike),
-                  ],
+                  body: TabBarView(
+                    children: [
+                      Icon(Icons.directions_car),
+                      Icon(Icons.directions_transit),
+                      Icon(Icons.directions_bike),
+                    ],
+                  ),
                 ),
               ),
             )
