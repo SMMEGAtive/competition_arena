@@ -1,4 +1,5 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
+import 'package:competition_arena/components/chat_display.dart';
 import 'package:flutter/material.dart';
 
 class Chat extends StatefulWidget {
@@ -15,6 +16,7 @@ class _ChatState extends State<Chat> {
         hasBackButton: true,
         title: 'Nama Penggunanya',
       ),
+      body: ChatDisplay(),
     );
   }
 }

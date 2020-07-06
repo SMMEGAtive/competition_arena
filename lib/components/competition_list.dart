@@ -13,6 +13,7 @@ class _CompetitionListState extends State<CompetitionList> {
       //itemCount harus dibikin dinamis nanti
       itemCount: 6,
       scrollDirection: Axis.vertical,
+      shrinkWrap: true,
 
       //Buat build list
       itemBuilder: (context, index) {

@@ -1,6 +1,8 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
 import 'package:competition_arena/components/button_custom.dart';
+import 'package:competition_arena/components/charts.dart';
 import 'package:flutter/material.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 class Statistic extends StatefulWidget {
   @override
@@ -8,6 +10,7 @@ class Statistic extends StatefulWidget {
 }
 
 class _StatisticState extends State<Statistic> {
+  // Chart State
   var detailed = false;
   var simple = true;
   var mahasiswa = true;
@@ -15,6 +18,14 @@ class _StatisticState extends State<Statistic> {
   var win = true;
   var participation = false;
   var ratio = false;
+
+  barChart(int code) {
+    if (code == 11) {
+      HorizontalBarChart(_createSampleData());
+    } else {
+      HorizontalBarChart(_createSampleData());
+    }
+  }
 
   interfaceLoading() {
     if (simple && !detailed) {
@@ -69,7 +80,7 @@ class _StatisticState extends State<Statistic> {
     if (simple) {
       if (mahasiswa) {
         if (win) {
-          return Text('Chart Simple Mahasiswa Juara');
+          return HorizontalBarChart(_createSampleData());
         } else if (participation) {
           return Text('Chart Simple Mahasiswa Participation');
         } else if (ratio) {
@@ -97,6 +108,34 @@ class _StatisticState extends State<Statistic> {
         return Text('????');
       }
     }
+  }
+
+  static List<charts.Series<OrdinalParticipation, String>> _createSampleData() {
+    final data = [
+      new OrdinalParticipation('PNJ', 15),
+      new OrdinalParticipation('UI', 15),
+      new OrdinalParticipation('Gundar', 12),
+      new OrdinalParticipation('UIN Ciputat', 10),
+      new OrdinalParticipation('ITB', 15),
+      new OrdinalParticipation('UGM', 15),
+      new OrdinalParticipation('UPNVJ', 12),
+      new OrdinalParticipation('UPNVYK', 10),
+      new OrdinalParticipation('IPB', 15),
+      new OrdinalParticipation('Binus', 15),
+    ];
+
+    return [
+      new charts.Series(
+        id: 'Participation',
+        data: data,
+        domainFn: (OrdinalParticipation participation, _) =>
+            participation.label,
+        measureFn: (OrdinalParticipation participation, _) =>
+            participation.count,
+        labelAccessorFn: (OrdinalParticipation participation, _) =>
+            '${participation.label}: ${participation.count.toString()}',
+      )
+    ];
   }
 
   @override
@@ -167,7 +206,7 @@ class _StatisticState extends State<Statistic> {
               ),
             ),
             interfaceLoading(),
-            chartLoading()
+            Flexible(child: chartLoading(),)
           ],
         ),
       ),

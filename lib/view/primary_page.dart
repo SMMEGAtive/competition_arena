@@ -12,7 +12,12 @@ class PrimaryPage extends StatefulWidget {
 
 class _PrimaryPageState extends State<PrimaryPage> {
   int _selectedIndex = 0;
-  static List<Widget> _widgetList = <Widget>[Home(), Feed(), Statistic(), Profile()];
+  static List<Widget> _widgetList = <Widget>[
+    Home(),
+    Feed(),
+    Statistic(),
+    Profile()
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -27,19 +32,31 @@ class _PrimaryPageState extends State<PrimaryPage> {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(
+              Icons.home,
+              color: ColorPalette.lightBlue_100,
+            ),
             title: Text('Home'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.rss_feed),
+            icon: Icon(
+              Icons.rss_feed,
+              color: ColorPalette.lightBlue_100,
+            ),
             title: Text('Feed'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.multiline_chart),
+            icon: Icon(
+              Icons.multiline_chart,
+              color: ColorPalette.lightBlue_100,
+            ),
             title: Text('Stat'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
+            icon: Icon(
+              Icons.account_circle,
+              color: ColorPalette.lightBlue_100,
+            ),
             title: Text('Profile'),
           )
         ],

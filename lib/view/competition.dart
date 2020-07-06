@@ -1,7 +1,10 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
 import 'package:competition_arena/values/color_palette.dart';
 import 'package:competition_arena/view/chat.dart';
+import 'package:competition_arena/view/competition_meta.dart';
+import 'package:competition_arena/view/submission_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Competition extends StatelessWidget {
   @override
@@ -20,9 +23,9 @@ class Competition extends StatelessWidget {
                 ),
               );
             },
-            child: Text(
-              'Chat',
-              style: TextStyle(color: ColorPalette.black, fontSize: 28),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              child: SvgPicture.asset('assets/bubble.svg', width: 30.0),
             ),
           )
         ],
@@ -72,6 +75,40 @@ class Competition extends StatelessWidget {
                       bottom: 20,
                       left: 15,
                     ),
+                    Positioned(
+                      child: InkWell(
+                        child: Icon(Icons.list),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SubmissionList(),
+                            ),
+                          );
+                        },
+                      ),
+                      top: 10,
+                      right: 15,
+                    ),
+                    Positioned(
+                      child: InkWell(
+                        child: SvgPicture.asset(
+                          'assets/pencil.svg',
+                          width: 20,
+                          color: ColorPalette.black,
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CompetitionMeta(),
+                            ),
+                          );
+                        },
+                      ),
+                      top: 10,
+                      right: 50,
+                    ),
                   ],
                 ),
               ),
@@ -83,15 +120,19 @@ class Competition extends StatelessWidget {
                   child: Text(
                       'Description DescriptionDescription Description Description Description Description Description Description Description Description Description Description Description Description'),
                 ),
-              ),
+              )
             ],
           ),
           Positioned(
             child: Align(
               alignment: FractionalOffset.bottomCenter,
               child: Container(
-                color: ColorPalette.black,
-                width: 300,
+                decoration: BoxDecoration(
+                  border: Border(
+                      top: BorderSide(color: ColorPalette.black, width: 1.0)),
+                  color: ColorPalette.white,
+                ),
+                width: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.all(10),
                 child: RaisedButton(
                   onPressed: () {},
