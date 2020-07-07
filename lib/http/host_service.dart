@@ -35,7 +35,7 @@ class HostService {
 
   Future<HostData> doPostOne(String hostName, List<int> members) async {
     final body = {
-      "Host_name": hostName,
+      "Host_Name": hostName,
       "Members": members,
     };
     final response = await client.post(
@@ -53,7 +53,7 @@ class HostService {
 
   Future<String> doUpdateOne(int id, String hostName, List<int> members) async {
     final body = {
-      "Host_name": hostName,
+      "Host_Name": hostName,
       "Members": members,
     };
     final response = await client.patch(
