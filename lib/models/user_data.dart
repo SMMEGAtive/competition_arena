@@ -1,11 +1,36 @@
-import 'package:json_annotation/json_annotation.dart';
+// To parse this JSON data, do
+//
+//     final userData = userDataFromJson(jsonString);
+
 import 'dart:convert';
 
-@JsonSerializable()
+import 'package:competition_arena/http/api_service.dart';
+
+UserData userDataFromJson(String str) => UserData.fromJson(json.decode(str));
+
+String userDataToJson(UserData data) => json.encode(data.toJson());
+
 class UserData {
-  final int idUser;
+  UserData({
+    this.username,
+    this.idUser,
+    this.email,
+    this.emailVerified,
+    this.password,
+    this.phone,
+    this.address,
+    this.role,
+    this.description,
+    this.affiliation,
+    this.gender,
+    this.dateOfBirth,
+    this.avatarPath,
+  });
+
   final String username;
+  final int idUser;
   final String email;
+  final bool emailVerified;
   final String password;
   final String phone;
   final String address;
@@ -13,20 +38,43 @@ class UserData {
   final String description;
   final String affiliation;
   final int gender;
-  final String dob;
+  final DateTime dateOfBirth;
   final String avatarPath;
 
-  UserData({this.username, this.idUser, this.password, this.email, this.phone, this.address, this.role, this.description, this.affiliation, this.gender, this.dob, this.avatarPath,});
-  UserData.fromJson(Map<String, dynamic> parsedJson) : username = parsedJson["Username"],
-  idUser = parsedJson["ID_User"],
-  password = parsedJson["Password"],
-  email = parsedJson["Email"],
-  phone = parsedJson["Phone"],
-  address = parsedJson["Address"],
-  role = parsedJson["Role"],
-  description = parsedJson["Description"],
-  affiliation = parsedJson["Affiliation"],
-  gender = parsedJson["Gender"],
-  dob = parsedJson["Date_of_Birth"],
-  avatarPath = parsedJson["Avatar_Path"];
+  String url() {
+    ApiServices api = ApiServices();
+    return api.base_url;
+  }
+
+  factory UserData.fromJson(Map<String, dynamic> json) => UserData(
+        username: json["Username"],
+        idUser: json["ID_User"],
+        email: json["Email"],
+        emailVerified: json["Email_Verified"],
+        password: json["Password"],
+        phone: json["Phone"],
+        address: json["Address"],
+        role: json["Role"],
+        description: json["Description"],
+        affiliation: json["Affiliation"],
+        gender: json["Gender"],
+        dateOfBirth: DateTime.parse(json["Date_of_Birth"]),
+        avatarPath: json["Avatar_Path"].substring(8),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "Username": username,
+        "ID_User": idUser,
+        "Email": email,
+        "Email_Verified": emailVerified,
+        "Password": password,
+        "Phone": phone,
+        "Address": address,
+        "Role": role,
+        "Description": description,
+        "Affiliation": affiliation,
+        "Gender": gender,
+        "Date_of_Birth": dateOfBirth.toIso8601String(),
+        "Avatar_Path": avatarPath,
+      };
 }

@@ -10,7 +10,6 @@ class ManageMember extends StatefulWidget {
 class _ManageMemberState extends State<ManageMember> {
   final String memberType;
   double num = 1;
-  int editMode = 0;
 
   _ManageMemberState({this.memberType});
 
@@ -18,20 +17,15 @@ class _ManageMemberState extends State<ManageMember> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manage Member'),
+        title: Text('Penyelenggara'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {},
         ),
-        backgroundColor: ColorPalette.darkBlue_300,
+        backgroundColor: ColorPalette.lightBlue_200,
         elevation: 0,
-        actions: <Widget>[IconButton(icon: Icon(Icons.edit), onPressed: () {
-          setState(() {
-            
-          });
-        })],
       ),
-      backgroundColor: ColorPalette.darkBlue_300,
+      backgroundColor: ColorPalette.lightBlue_200,
       body: Container(
         child: Column(
           children: <Widget>[
@@ -51,7 +45,7 @@ class _ManageMemberState extends State<ManageMember> {
                       ),
                     ),
                   ),
-                  Container(
+                  /* Container(
                     child: Padding(
                       padding: EdgeInsets.all(4.0),
                       child: Text(
@@ -72,7 +66,7 @@ class _ManageMemberState extends State<ManageMember> {
                         ),
                       ),
                     ),
-                  ),
+                  ), */
                 ],
               ),
             ),

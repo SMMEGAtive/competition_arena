@@ -18,17 +18,19 @@ class _HomeState extends State<Home> {
         title: "Competition Arena",
         hasBackButton: false,
       ),
-      body: SingleChildScrollView(child: Container(
+      body: Container(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Container(child: CategoryListing()),
+            CategoryListing(),
             Flexible(
-              child: CompetitionList(),
+              child: Container(
+                child: CompetitionList(),
+              ),
             )
           ],
         ),
-      )),
+      ),
     );
   }
 }

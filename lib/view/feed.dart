@@ -1,9 +1,16 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
 import 'package:competition_arena/components/button_custom.dart';
+import 'package:competition_arena/components/chat_display.dart';
 import 'package:competition_arena/components/competition_item.dart';
 import 'package:competition_arena/components/competition_list.dart';
+import 'package:competition_arena/http/chat_service.dart';
+import 'package:competition_arena/http/user_service.dart';
+import 'package:competition_arena/models/chat_room_data.dart';
+import 'package:competition_arena/models/me_data.dart';
 import 'package:competition_arena/view/competition.dart';
 import 'package:flutter/material.dart';
+
+import 'chat.dart';
 
 class Feed extends StatefulWidget {
   @override
@@ -11,6 +18,28 @@ class Feed extends StatefulWidget {
 }
 
 class _FeedState extends State<Feed> {
+  ChatService chatService = ChatService();
+  UserService userService = UserService();
+  Future<List<ChatRoomData>> room;
+  MeData me;
+
+  Future<List<ChatRoomData>> loadChatRoom() async {
+    room = chatService.doGetList();
+    return room;
+  }
+
+  Future<MeData> loadMe() async {
+    me = await userService.doGetLogged();
+    return me;
+  }
+
+  @override
+  void initState() {
+    loadMe();
+    loadChatRoom();
+    super.initState();
+  }
+
   var option = SingleChildScrollView(
     scrollDirection: Axis.horizontal,
     child: Container(
@@ -55,7 +84,73 @@ class _FeedState extends State<Feed> {
         child: Column(
           children: <Widget>[
             Container(child: option),
-            item,
+            FutureBuilder(
+              future: loadChatRoom(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<ChatRoomData>> snapshot) {
+                if (snapshot.hasData) {
+                  print(snapshot.data.length);
+                  return ListView.builder(
+                    //itemCount harus dibikin dinamis nanti
+                    itemCount: snapshot.data.length,
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+
+                    //Buat build list
+                    itemBuilder: (context, index) {
+                      return Container(
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Chat(data: snapshot.data[index], me: me),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 15),
+                            child: Text(
+                              snapshot.data[index].roomName,
+                              style: TextStyle(fontSize: 24),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Column(
+                    children: <Widget>[
+                      Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                        size: 60,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Text('Error: ${snapshot.error}'),
+                      )
+                    ],
+                  );
+                } else {
+                  return Column(
+                    children: <Widget>[
+                      SizedBox(
+                        child: CircularProgressIndicator(),
+                        width: 60,
+                        height: 60,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 16),
+                        child: Text('Awaiting result...'),
+                      )
+                    ],
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),

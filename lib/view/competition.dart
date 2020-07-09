@@ -1,12 +1,98 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
+import 'package:competition_arena/components/button_custom.dart';
+import 'package:competition_arena/http/user_service.dart';
+import 'package:competition_arena/models/competition_data.dart';
+import 'package:competition_arena/models/me_data.dart';
 import 'package:competition_arena/values/color_palette.dart';
 import 'package:competition_arena/view/chat.dart';
 import 'package:competition_arena/view/competition_meta.dart';
 import 'package:competition_arena/view/submission_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Competition extends StatelessWidget {
+class Competition extends StatefulWidget {
+  final CompetitionData data;
+
+  Competition({this.data});
+  @override
+  State<StatefulWidget> createState() => _CompetitionState(data: data);
+}
+
+class _CompetitionState extends State<Competition> {
+  final CompetitionData data;
+  MeData me = new MeData();
+  var editButton;
+
+  _CompetitionState({this.data});
+
+  initState() {
+    getPreference();
+    super.initState();
+    setState(() {
+      getPreference();
+    });
+  }
+
+  String getCompetitionStatus() {
+    DateTime now = DateTime.now();
+
+    if (now.isBefore(data.registrationStart)) {
+      return 'Belum dibuka';
+    } else if (now.isAfter(data.registrationStart) &&
+        now.isBefore(data.registrationEnd)) {
+      return 'Fase Pendaftaran: ${data.registrationStart} - ${data.registrationEnd} ';
+    } else if (now.isBefore(data.verificationEnd)) {
+      return 'Fase Verifikasi: Sebelum ${data.verificationEnd} ';
+    } else if (now.isAfter(data.executionStart) &&
+        now.isBefore(data.executionEnd)) {
+      return 'Fase Pelaksanaan: ${data.executionStart} - ${data.executionEnd}';
+    } else if (now.isAfter(data.executionEnd) &&
+        now.isBefore(data.announcementDate)) {
+      return 'Menunggu pengumuman: ${data.announcementDate} ';
+    } else if (now.isAfter(data.announcementDate)) {
+      return 'Selesai';
+    } else {
+      return 'Tidak diketahui';
+    }
+  }
+
+  getPreference() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    UserService service = new UserService();
+    me = await service.doGetLogged();
+    print(me.role.toString());
+    await Future.delayed(Duration(seconds: 2));
+    setState(() {
+      if (me.role == 1 || me.role == 3) {
+        print('it does went thru here');
+        editButton = Positioned(
+          child: InkWell(
+            child: SvgPicture.asset(
+              'assets/pencil.svg',
+              width: 20,
+              color: ColorPalette.black,
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CompetitionMeta(data: data),
+                ),
+              );
+            },
+          ),
+          top: 10,
+          right: 50,
+        );
+        print('it does went thru here');
+      } else {
+        print('why does it went here');
+        editButton = Container();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +138,7 @@ class Competition extends StatelessWidget {
                     ),
                     Positioned(
                       child: Text(
-                        'Lomba 1',
+                        data.title,
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w900),
                       ),
@@ -61,7 +147,7 @@ class Competition extends StatelessWidget {
                     ),
                     Positioned(
                       child: Text(
-                        'Penyelenggara',
+                        data.idHost.toString(),
                         style: TextStyle(fontSize: 12),
                       ),
                       bottom: 40,
@@ -69,7 +155,7 @@ class Competition extends StatelessWidget {
                     ),
                     Positioned(
                       child: Text(
-                        'Tanggal',
+                        getCompetitionStatus(),
                         style: TextStyle(fontSize: 12),
                       ),
                       bottom: 20,
@@ -90,25 +176,7 @@ class Competition extends StatelessWidget {
                       top: 10,
                       right: 15,
                     ),
-                    Positioned(
-                      child: InkWell(
-                        child: SvgPicture.asset(
-                          'assets/pencil.svg',
-                          width: 20,
-                          color: ColorPalette.black,
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CompetitionMeta(),
-                            ),
-                          );
-                        },
-                      ),
-                      top: 10,
-                      right: 50,
-                    ),
+                    (editButton != null ? editButton : Container()),
                   ],
                 ),
               ),
@@ -117,8 +185,7 @@ class Competition extends StatelessWidget {
                   width: double.infinity,
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(border: Border.all(width: 1)),
-                  child: Text(
-                      'Description DescriptionDescription Description Description Description Description Description Description Description Description Description Description Description Description'),
+                  child: Text(data.description),
                 ),
               )
             ],
@@ -134,9 +201,10 @@ class Competition extends StatelessWidget {
                 ),
                 width: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.all(10),
-                child: RaisedButton(
-                  onPressed: () {},
-                  child: Text('Button Bar'),
+                child: ButtonCustom(
+                  color: ColorPalette.green_200,
+                  onPress: () {},
+                  text: 'Button Bar',
                 ),
               ),
             ),

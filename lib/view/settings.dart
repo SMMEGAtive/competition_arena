@@ -1,4 +1,5 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
+import 'package:competition_arena/view/profile_edit.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatefulWidget {
@@ -7,13 +8,21 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  Widget view;
   loadInitSettings() {
     return Container(
       child: Column(
         children: <Widget>[
           SettingsItem(
             text: 'Edit Profil',
-            onPress: () {},
+            onPress: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileEdit(),
+                ),
+              );
+            },
           ),
           SettingsItem(
             text: 'Ubah Password',
@@ -46,9 +55,41 @@ class _SettingsState extends State<Settings> {
     );
   }
 
+  loadProfileEdit() {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          TextField(
+            decoration: InputDecoration(labelText: 'Nama Pengguna'),
+          ),
+          TextField(
+            decoration: InputDecoration(labelText: 'Jenis Kelamin'),
+          ),
+          TextField(
+            decoration: InputDecoration(labelText: 'Nomor Handphone'),
+          ),
+          TextField(
+            decoration: InputDecoration(labelText: 'Tanggal Lahir'),
+          ),
+          TextField(
+            decoration: InputDecoration(labelText: 'Email'),
+          ),
+          TextField(
+            decoration: InputDecoration(labelText: 'Deskripsi'),
+          ),
+          TextField(
+            decoration: InputDecoration(labelText: 'Alamat'),
+          ),
+          TextField(
+            decoration: InputDecoration(labelText: 'Afiliasi'),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget view;
     view = loadInitSettings();
     return Scaffold(
       appBar: AppBarCustom(

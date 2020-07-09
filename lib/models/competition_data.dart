@@ -12,7 +12,6 @@ class CompetitionData {
     CompetitionData({
         this.idCompetition,
         this.idHost,
-        this.idWinner,
         this.title,
         this.description,
         this.registrationStart,
@@ -21,11 +20,11 @@ class CompetitionData {
         this.executionStart,
         this.executionEnd,
         this.announcementDate,
+        this.tags,
     });
 
     final int idCompetition;
     final int idHost;
-    final int idWinner;
     final String title;
     final String description;
     final DateTime registrationStart;
@@ -34,11 +33,11 @@ class CompetitionData {
     final DateTime executionStart;
     final DateTime executionEnd;
     final DateTime announcementDate;
+    final List<String> tags;
 
     factory CompetitionData.fromJson(Map<String, dynamic> json) => CompetitionData(
         idCompetition: json["ID_Competition"],
         idHost: json["ID_Host"],
-        idWinner: json["ID_Winner"],
         title: json["Title"],
         description: json["Description"],
         registrationStart: DateTime.parse(json["Registration_Start"]),
@@ -47,12 +46,12 @@ class CompetitionData {
         executionStart: DateTime.parse(json["Execution_Start"]),
         executionEnd: DateTime.parse(json["Execution_End"]),
         announcementDate: DateTime.parse(json["Announcement_Date"]),
+        tags: List<String>.from(json["Tags"].map((x) => x)),
     );
 
     Map<String, dynamic> toJson() => {
         "ID_Competition": idCompetition,
         "ID_Host": idHost,
-        "ID_Winner": idWinner,
         "Title": title,
         "Description": description,
         "Registration_Start": registrationStart.toIso8601String(),
@@ -61,5 +60,6 @@ class CompetitionData {
         "Execution_Start": executionStart.toIso8601String(),
         "Execution_End": executionEnd.toIso8601String(),
         "Announcement_Date": announcementDate.toIso8601String(),
+        "Tags": List<dynamic>.from(tags.map((x) => x)),
     };
 }

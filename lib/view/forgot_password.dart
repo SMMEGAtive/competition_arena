@@ -4,6 +4,7 @@ import 'package:competition_arena/view/login.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPassword extends StatefulWidget {
+  String token;
   @override
   State<StatefulWidget> createState() => _ForgotPasswordState();
 }

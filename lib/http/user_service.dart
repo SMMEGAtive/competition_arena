@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:html';
+import 'dart:io';
 
 import 'package:competition_arena/http/api_service.dart';
 import 'package:competition_arena/models/competition_data.dart';
@@ -13,13 +13,23 @@ class UserService {
   Client client = new Client();
 
   Future<String> doLogin(String email, String password) async {
-    final body = {"Email": email, "Password": password};
-    final response = await client.post(
-      '${api.base_url}/users/login/',
-      body: body,
-    );
+    final body = jsonEncode({"email": email, "password": password});
+    String token;
+    Map<String, String> headers = {
+      HttpHeaders.contentTypeHeader: "application/json",
+      HttpHeaders.authorizationHeader: await api.authHeader()
+    };
+    final response = await client.post('${api.base_url}/users/login/',
+        body: body, headers: headers);
 
-    String token = json.decode(response.body);
+    if (response.statusCode == 200) {
+      print(response.body);
+      Map<String, dynamic> map = json.decode(response.body);
+      token = map["token"];
+    } else {
+      return "failed";
+    }
+
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.setString('token', token);
 
@@ -34,28 +44,36 @@ class UserService {
     List<dynamic> list = json.decode(response.body);
     List<UserData> listUser = new List();
     for (int i = 0; i < list.length; i++) {
-      listUser.add(UserData.fromJson(json.decode(list[i])));
+      listUser.add(userDataFromJson(list[i]));
     }
 
     return listUser;
   }
 
   Future<UserData> doGetOne(int id) async {
-    final response = await client.get(
-      '${api.base_url}/users/get/$id',
-    );
+    Map<String, String> headers = {
+      HttpHeaders.contentTypeHeader: "application/json",
+      HttpHeaders.authorizationHeader: await api.authHeader()
+    };
+    final response =
+        await client.get('${api.base_url}/users/get/$id', headers: headers);
 
-    UserData regResponse = UserData.fromJson(json.decode(response.body));
+    Map<String, dynamic> map = json.decode(response.body);
+    UserData regResponse = UserData.fromJson(map);
 
     return regResponse;
   }
 
   Future<MeData> doGetLogged() async {
-    final response = await client.get(
-      '${api.base_url}/users/me',
-    );
+    Map<String, String> headers = {
+      HttpHeaders.contentTypeHeader: "application/json",
+      HttpHeaders.authorizationHeader: await api.authHeader()
+    };
 
-    MeData regResponse = MeData.fromJson(json.decode(response.body));
+    final response =
+        await client.get('${api.base_url}/users/me', headers: headers);
+
+    MeData regResponse = meDataFromJson(response.body);
 
     return regResponse;
   }
@@ -89,10 +107,12 @@ class UserService {
     return regResponse;
   }
 
-  Future<String> doRequestForgotPass() async {
+  Future<String> doRequestForgotPass(String email) async {
+    final body = {"email": email};
     final response = await client.post(
-      '${api.base_url}/users/forgotpass/request',
-    );
+        '${api.base_url}/users/forgotpass/request',
+        body: body,
+        headers: await api.getNormalHeaders());
 
     String regResponse = json.decode(response.body);
 
@@ -104,8 +124,10 @@ class UserService {
       "new_password": newPass,
       "new_password_reinput": newPassReinput
     };
-    final response = await client
-        .post('${api.base_url}/users/forgotpass/change', body: body);
+    final response = await client.post(
+        '${api.base_url}/users/forgotpass/change',
+        body: body,
+        headers: await api.getNormalHeaders());
 
     String regResponse = json.decode(response.body);
 
@@ -113,7 +135,8 @@ class UserService {
   }
 
   Future<String> doVerifyEmail() async {
-    final response = await client.post('${api.base_url}/users/verifyemail');
+    final response = await client.post('${api.base_url}/users/verifyemail',
+        headers: await api.getNormalHeaders());
 
     String regResponse = json.decode(response.body);
 
@@ -127,16 +150,15 @@ class UserService {
       "new_password": newPass,
       "new_password_reinput": newPassReinput
     };
-    final response =
-        await client.post('${api.base_url}/users/changepass', body: body);
+    final response = await client.post('${api.base_url}/users/changepass',
+        body: body, headers: await api.getNormalHeaders());
 
     String regResponse = json.decode(response.body);
   }
 
   Future<int> doCount() async {
-    final response = await client.get(
-      '${api.base_url}/users/count',
-    );
+    final response = await client.get('${api.base_url}/users/count',
+        headers: await api.getNormalHeaders());
 
     int count = json.decode(response.body);
 
@@ -166,9 +188,7 @@ class UserService {
     final response = await client.patch(
       '${api.base_url}/users/update/$id',
       body: body,
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
+      headers: await api.getNormalHeaders(),
     );
 
     String status = json.decode(response.body);
@@ -179,12 +199,8 @@ class UserService {
   Future<String> doDeleteOne(
     int id,
   ) async {
-    final response = await client.delete(
-      '${api.base_url}/users/delete/$id',
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
-    );
+    final response = await client.delete('${api.base_url}/users/delete/$id',
+        headers: await api.getNormalHeaders());
 
     return response.body;
   }
@@ -193,9 +209,7 @@ class UserService {
     final body = {"avatar": img};
     final response = await client.patch(
       '${api.base_url}/users/changeavatar/$id',
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
+      headers: await api.getNormalHeaders(),
       body: body,
     );
   }

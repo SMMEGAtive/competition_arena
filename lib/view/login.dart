@@ -1,5 +1,6 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
 import 'package:competition_arena/components/button_custom.dart';
+import 'package:competition_arena/http/user_service.dart';
 import 'package:competition_arena/models/competition_data.dart';
 import 'package:competition_arena/view/display_payment.dart';
 import 'package:competition_arena/view/forgot_password.dart';
@@ -16,6 +17,8 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   CompetitionService compService = CompetitionService();
+  final email = TextEditingController();
+  final password = TextEditingController();
   String text = "ddd";
 
   @override
@@ -31,7 +34,6 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBarCustom(
         title: 'Login',
@@ -42,11 +44,14 @@ class _LoginState extends State<Login> {
         child: Column(
           children: <Widget>[
             TextField(
+              controller: email,
               decoration: InputDecoration(
                 labelText: 'Nama Pengguna / Email / Nomor Handphone',
               ),
             ),
             TextField(
+              controller: password,
+              obscureText: true,
               decoration: InputDecoration(
                 labelText: 'Password',
               ),
@@ -56,12 +61,44 @@ class _LoginState extends State<Login> {
               child: ButtonPrimary(
                 text: 'Login',
                 onPress: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PrimaryPage(),
-                    ),
-                  );
+                  if (email.text.length != 0 && password.text.length != 0) {
+                    UserService userService = new UserService();
+                    userService.doLogin(email.text, password.text).then((data) {
+                      if (data.toString() == "failed") {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Login gagal'),
+                            content:
+                                Text('Periksa kembali email dan password anda'),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PrimaryPage(),
+                          ),
+                        );
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Login berhasil'),
+                            content:
+                                Text('Selamat datang,'),
+                          ),
+                        );
+                      }
+                    });
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Login gagal'),
+                        content: Text('Isi kedua textfield yang disediakan'),
+                      ),
+                    );
+                  }
                 },
               ),
             ),
@@ -107,7 +144,7 @@ class _LoginState extends State<Login> {
                 },
               ),
             ),
-            Container(
+            /* Container(
               child: InkWell(
                 child: Text('shortcut'),
                 onTap: () {
@@ -120,7 +157,7 @@ class _LoginState extends State<Login> {
                 },
               ),
             ),
-            Text(text)
+            Text(text) */
           ],
         ),
       ),

@@ -1,21 +1,30 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiServices {
-  String base_url = "https://e83f28653631.ngrok.io";
+  String base_url = "https://2534c07c2425.ngrok.io";
   Client client = Client();
 
   Future<String> authHeader() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     var type = "Bearer";
     var token = preferences.getString('token');
-    
+
     return "$type $token";
   }
 
   String getBaseUrl() {
     return base_url;
+  }
+
+  Future<Map<String, String>> getNormalHeaders() async {
+    Map<String, String> headers = {
+      HttpHeaders.contentTypeHeader: "application/json",
+      HttpHeaders.authorizationHeader: await authHeader()
+    };
+    return headers;
   }
 
   /* String authHeader() {

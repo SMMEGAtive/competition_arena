@@ -1,21 +1,43 @@
+import 'package:competition_arena/models/competition_data.dart';
 import 'package:competition_arena/view/competition.dart';
 import 'package:flutter/material.dart';
 
 class CompetitionItem extends StatelessWidget {
-  final String title;
-  final String date;
+  final CompetitionData data;
   final String imageURL;
-  final String status;
-  final String description;
 
   CompetitionItem({
     Key key,
-    this.title,
-    this.date,
+    this.data,
     this.imageURL,
-    this.status,
-    this.description,
   }) : super(key: key);
+
+  String getCompetitionStatus() {
+    DateTime now = DateTime.now();
+
+    if (now.isBefore(data.registrationStart)) {
+      return 'Belum dibuka';
+    } else if (now.isAfter(data.registrationStart) &&
+        now.isBefore(data.registrationEnd)) {
+      return '''Fase Pendaftaran:
+      ${data.registrationStart} - ${data.registrationEnd} ''';
+    } else if (now.isBefore(data.verificationEnd)) {
+      return '''Fase Verifikasi:
+      Sebelum ${data.verificationEnd} ''';
+    } else if (now.isAfter(data.executionStart) &&
+        now.isBefore(data.executionEnd)) {
+      return '''Fase Pelaksanaan:
+      ${data.executionStart} - ${data.executionEnd} ''';
+    } else if (now.isAfter(data.executionEnd) &&
+        now.isBefore(data.announcementDate)) {
+      return '''Menunggu pengumuman:
+      ${data.announcementDate} ''';
+    } else if (now.isAfter(data.announcementDate)) {
+      return 'Selesai';
+    } else {
+      return 'Tidak diketahui';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,10 +64,9 @@ class CompetitionItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(title),
-              Text('Tanggal ' + status + ':'),
-              Text(date),
-              Text(description)
+              Text(data.title, overflow: TextOverflow.ellipsis, maxLines: 2,),
+              Text(getCompetitionStatus(), overflow: TextOverflow.ellipsis, maxLines: 2,),
+              Text(data.description, overflow: TextOverflow.ellipsis, maxLines: 2,),
             ],
           )
         ],
@@ -58,7 +79,7 @@ class CompetitionItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Competition(),
+            builder: (context) => Competition(data: data),
           ),
         );
       },

@@ -15,14 +15,15 @@ class ChatService {
   Client client = new Client();
 
   Future<List<ChatRoomData>> doGetList() async {
-    final response = await client.get(
-      '${api.base_url}/chat-rooms/get/',
-    );
+    final response = await client.get('${api.base_url}/chat-rooms/get/',
+        headers: await api.getNormalHeaders());
 
     List<dynamic> list = json.decode(response.body);
     List<ChatRoomData> listUser = new List();
     for (int i = 0; i < list.length; i++) {
-      listUser.add(ChatRoomData.fromJson(json.decode(list[i])));
+      if (list[i]["Members"] != null) {
+        listUser.add(ChatRoomData.fromJson(list[i]));
+      }
     }
 
     return listUser;
@@ -30,13 +31,13 @@ class ChatService {
 
   Future<List<ChatMessageData>> doGetListFromRoom(int id) async {
     final response = await client.get(
-      '${api.base_url}/chat-rooms/get/messages/$id',
-    );
+        '${api.base_url}/chat-rooms/get/messages/$id',
+        headers: await api.getNormalHeaders());
 
     List<dynamic> list = json.decode(response.body);
     List<ChatMessageData> listUser = new List();
     for (int i = 0; i < list.length; i++) {
-      listUser.add(ChatMessageData.fromJson(json.decode(list[i])));
+      listUser.add(ChatMessageData.fromJson(list[i]));
     }
 
     return listUser;
@@ -70,10 +71,11 @@ class ChatService {
   }
 
   Future<ChatRoomData> doSendMessage(
-      int idRoom,
-      int idUser,
-      String message,
-      String image,) async {
+    int idRoom,
+    int idUser,
+    String message,
+    String image,
+  ) async {
     final body = {
       "ID_Room": idRoom,
       "ID_User": idUser,
