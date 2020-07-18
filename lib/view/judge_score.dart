@@ -1,7 +1,21 @@
+import 'package:competition_arena/http/score_service.dart';
 import 'package:competition_arena/values/color_palette.dart';
+import 'package:competition_arena/view/submission_display.dart';
 import 'package:flutter/material.dart';
 
 class JudgeScore extends StatelessWidget {
+  final int idSubmission;
+  TextEditingController impression = TextEditingController();
+  TextEditingController score = TextEditingController();
+  ScoreService scoreService = ScoreService();
+
+  JudgeScore({this.idSubmission});
+
+  castScore() async {
+    await scoreService.doPostOne(
+        idSubmission, int.parse(score.text), impression.text);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,6 +54,12 @@ class JudgeScore extends StatelessWidget {
               TextField(
                 minLines: 1,
                 maxLines: 3,
+                controller: impression,
+                decoration: InputDecoration(labelText: 'Komentar'),
+              ),
+              TextField(
+                controller: score,
+                decoration: InputDecoration(labelText: 'Score'),
               ),
               RaisedButton(
                 child: Text('Beri Nilai'),
@@ -58,7 +78,16 @@ class JudgeScore extends StatelessWidget {
                             FlatButton(
                               child: Text('Ya'),
                               onPressed: () {
+                                castScore();
                                 Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SubmissionDisplay(
+                                      submissionID: idSubmission,
+                                    ),
+                                  ),
+                                );
                               },
                             ),
                             FlatButton(

@@ -28,13 +28,13 @@ class CommentService {
 
   Future<List<CommentData>> doGetListFromSubmission(int id) async {
     final response = await client.get(
-      '${api.base_url}/comments/get/submission/$id',
-    );
+        '${api.base_url}/comments/get/submission/$id',
+        headers: await api.getNormalHeaders());
 
     List<dynamic> list = json.decode(response.body);
     List<CommentData> listUser = new List();
     for (int i = 0; i < list.length; i++) {
-      listUser.add(CommentData.fromJson(json.decode(list[i])));
+      listUser.add(CommentData.fromJson(list[i]));
     }
 
     return listUser;
@@ -45,61 +45,44 @@ class CommentService {
       '${api.base_url}/comments/get/$id',
     );
 
-    CommentData regResponse =
-        CommentData.fromJson(json.decode(response.body));
+    CommentData regResponse = CommentData.fromJson(json.decode(response.body));
 
     return regResponse;
   }
 
   Future<CommentData> doPostOne(int idSubmission, String content) async {
-    final body = {
-      "ID_Submission": idSubmission,
-      "Content": content
-    };
+    final body = {"ID_Submission": idSubmission, "Content": content};
     final response = await client.post(
       '${api.base_url}/comments/new',
       body: body,
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
+      headers: await api.getNormalHeaders(),
     );
 
-    CommentData regResponse =
-        CommentData.fromJson(json.decode(response.body));
+    CommentData regResponse = commentDataFromJson(response.body);
 
     return regResponse;
   }
 
-  Future<CommentData> doReply(int idParent, int idSubmission, String content) async {
-    final body = {
-      "ID_Submission": idSubmission,
-      "Content": content
-    };
+  Future<CommentData> doReply(
+      int idParent, int idSubmission, String content) async {
+    final body = {"ID_Submission": idSubmission, "Content": content};
     final response = await client.post(
       '${api.base_url}/comments/reply/$idParent',
       body: body,
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
+      headers: await api.getNormalHeaders(),
     );
 
-    CommentData regResponse =
-        CommentData.fromJson(json.decode(response.body));
+    CommentData regResponse = commentDataFromJson(response.body);
 
     return regResponse;
   }
 
   Future<String> doUpdateOne(int id, int idSubmission, String content) async {
-    final body = {
-      "ID_Submission": idSubmission,
-      "Content": content
-    };
+    final body = {"ID_Submission": idSubmission, "Content": content};
     final response = await client.patch(
       '${api.base_url}/comments/update/$id',
       body: body,
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
+      headers: await api.getNormalHeaders(),
     );
 
     String status = json.decode(response.body);

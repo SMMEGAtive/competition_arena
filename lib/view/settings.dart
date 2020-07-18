@@ -1,6 +1,14 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
+import 'package:competition_arena/components/button_custom.dart';
+import 'package:competition_arena/http/user_service.dart';
+import 'package:competition_arena/models/me_data.dart';
+import 'package:competition_arena/models/user_data.dart';
+import 'package:competition_arena/values/color_palette.dart';
+import 'package:competition_arena/view/login.dart';
 import 'package:competition_arena/view/profile_edit.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -8,7 +16,35 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  UserService userService = UserService();
+  Future<UserData> user;
+  TextEditingController username;
+  int gender;
+  TextEditingController phone;
+  TextEditingController dob;
+  TextEditingController email;
+  TextEditingController description;
+  TextEditingController address;
+  TextEditingController affiliation;
+  TextEditingController oldPass;
+  TextEditingController newPass;
+  TextEditingController newPassValidation;
+  final format = DateFormat("yyyy-MM-dd");
+  String verificationStatus;
+
+  Future<UserData> loadUserData() async {
+    MeData me = await userService.doGetLogged();
+    user = userService.doGetOne(me.id);
+    return user;
+  }
+
+  Future<void> verify() async {
+    verificationStatus = await userService.doChangePass(
+        oldPass.text, newPass.text, newPassValidation.text);
+  }
+
   Widget view;
+  int _currentState = 0;
   loadInitSettings() {
     return Container(
       child: Column(
@@ -16,39 +52,63 @@ class _SettingsState extends State<Settings> {
           SettingsItem(
             text: 'Edit Profil',
             onPress: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProfileEdit(),
-                ),
-              );
+              setState(() {
+                _currentState = 1;
+              });
             },
           ),
           SettingsItem(
             text: 'Ubah Password',
-            onPress: () {},
+            onPress: () {
+              setState(() {
+                _currentState = 2;
+              });
+            },
           ),
           SettingsItem(
             text: 'Request Ubah Role',
-            onPress: () {},
+            onPress: () {
+              setState(() {
+                _currentState = 3;
+              });
+            },
           ),
           SettingsItemSpace(),
           SettingsItem(
             text: 'Syarat dan Ketentuan',
-            onPress: () {},
+            onPress: () {
+              setState(() {
+                _currentState = 4;
+              });
+            },
           ),
           SettingsItem(
             text: 'Kebijakan Privasi',
-            onPress: () {},
+            onPress: () {
+              setState(() {
+                _currentState = 5;
+              });
+            },
           ),
           SettingsItem(
             text: 'Bantuan',
-            onPress: () {},
+            onPress: () {
+              setState(() {
+                _currentState = 6;
+              });
+            },
           ),
           SettingsItemSpace(),
           SettingsItem(
             text: 'Keluar',
-            onPress: () {},
+            onPress: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Login(),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -57,32 +117,328 @@ class _SettingsState extends State<Settings> {
 
   loadProfileEdit() {
     return Container(
+        child: SingleChildScrollView(
+      child: FutureBuilder(
+        future: loadUserData(),
+        builder: (BuildContext context, AsyncSnapshot<UserData> snapshot) {
+          if (snapshot.hasData) {
+            username = TextEditingController(text: snapshot.data.username);
+            gender = snapshot.data.gender;
+            phone = TextEditingController(text: snapshot.data.phone);
+            dob = TextEditingController(
+                text: snapshot.data.dateOfBirth.toString());
+            email = TextEditingController(text: snapshot.data.email);
+            description =
+                TextEditingController(text: snapshot.data.description);
+            address = TextEditingController(text: snapshot.data.address);
+            affiliation =
+                TextEditingController(text: snapshot.data.affiliation);
+            return Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  child: TextField(
+                    controller: username,
+                    decoration: InputDecoration(labelText: 'Nama Pengguna'),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Radio(
+                            value: 1,
+                            groupValue: gender,
+                            onChanged: (int value) {
+                              setState(() {
+                                gender = value;
+                              });
+                            },
+                          ),
+                          Text('Pria')
+                        ],
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Radio(
+                            value: 2,
+                            groupValue: gender,
+                            onChanged: (int value) {
+                              setState(() {
+                                gender = value;
+                              });
+                            },
+                          ),
+                          Text('Wanita')
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                TextField(
+                  decoration: InputDecoration(labelText: 'Jenis Kelamin'),
+                ),
+                TextField(
+                  controller: phone,
+                  decoration: InputDecoration(labelText: 'Nomor Handphone'),
+                ),
+                DateTimeField(
+                  format: format,
+                  onShowPicker: (context, currentValue) {
+                    return showDatePicker(
+                        context: context,
+                        firstDate: DateTime(1900),
+                        initialDate: currentValue ?? DateTime.now(),
+                        lastDate: DateTime(2100));
+                  },
+                  controller: dob,
+                  decoration: InputDecoration(labelText: 'Tanggal Lahir'),
+                ),
+                TextField(
+                  controller: email,
+                  decoration: InputDecoration(labelText: 'Email'),
+                ),
+                TextField(
+                  controller: description,
+                  decoration: InputDecoration(labelText: 'Deskripsi'),
+                ),
+                TextField(
+                  controller: address,
+                  decoration: InputDecoration(labelText: 'Alamat'),
+                ),
+                TextField(
+                  controller: affiliation,
+                  decoration: InputDecoration(labelText: 'Afiliasi'),
+                ),
+                ButtonCustom(
+                  text: 'Simpan',
+                  onPress: () {
+                    userService
+                        .doUpdateOne(
+                            username.text,
+                            description.text,
+                            email.text,
+                            phone.text,
+                            address.text,
+                            affiliation.text,
+                            gender,
+                            dob.text)
+                        .then((verificationStatus) {
+                      if (verificationStatus == 'Success') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Login(),
+                          ),
+                        );
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Proses berhasil'),
+                            content: Text('Update berhasil'),
+                          ),
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Proses gagal'),
+                            content: Text(verificationStatus),
+                          ),
+                        );
+                      }
+                    });
+                  },
+                  color: ColorPalette.green_300,
+                )
+              ],
+            );
+          } else if (snapshot.hasError) {
+            return Column(
+              children: <Widget>[
+                Icon(
+                  Icons.error_outline,
+                  color: Colors.red,
+                  size: 60,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: Text('Error: ${snapshot.error}'),
+                )
+              ],
+            );
+          } else {
+            return Column(
+              children: <Widget>[
+                SizedBox(
+                  child: CircularProgressIndicator(),
+                  width: 60,
+                  height: 60,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text('Awaiting result...'),
+                )
+              ],
+            );
+          }
+        },
+      ),
+    ));
+  }
+
+  loadPasswordChange() {
+    return Container(
       child: Column(
         children: <Widget>[
           TextField(
-            decoration: InputDecoration(labelText: 'Nama Pengguna'),
-          ),
-          TextField(
-            decoration: InputDecoration(labelText: 'Jenis Kelamin'),
-          ),
-          TextField(
-            decoration: InputDecoration(labelText: 'Nomor Handphone'),
-          ),
-          TextField(
-            decoration: InputDecoration(labelText: 'Tanggal Lahir'),
-          ),
-          TextField(
+            controller: oldPass,
             decoration: InputDecoration(labelText: 'Email'),
           ),
           TextField(
+            controller: newPass,
             decoration: InputDecoration(labelText: 'Deskripsi'),
           ),
           TextField(
+            controller: newPassValidation,
             decoration: InputDecoration(labelText: 'Alamat'),
           ),
-          TextField(
-            decoration: InputDecoration(labelText: 'Afiliasi'),
+          ButtonCustom(
+            color: ColorPalette.darkBlue_400,
+            text: 'Simpan',
+            onPress: () {
+              if (oldPass.text.length != 0 ||
+                  newPass.text.length != 0 ||
+                  newPassValidation.text.length != 0) {
+                userService
+                    .doChangePass(
+                        oldPass.text, newPass.text, newPassValidation.text)
+                    .then((verificationStatus) {
+                  if (verificationStatus == 'Success') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Login(),
+                      ),
+                    );
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Proses berhasil'),
+                        content: Text('Password telah dirubah'),
+                      ),
+                    );
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Proses gagal'),
+                        content: Text(verificationStatus),
+                      ),
+                    );
+                  }
+                });
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Proses gagal'),
+                    content: Text('Isi semua field terlebih dahulu'),
+                  ),
+                );
+              }
+            },
           )
+        ],
+      ),
+    );
+  }
+
+  loadRoleChange() {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Text('Ganti peran'),
+          ButtonCustom(
+            color: ColorPalette.darkBlue_400,
+            text: 'Simpan',
+            onPress: () {
+              if (oldPass.text.length != 0 ||
+                  newPass.text.length != 0 ||
+                  newPassValidation.text.length != 0) {
+                verify();
+                if (verificationStatus == 'Success') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Login(),
+                    ),
+                  );
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Proses berhasil'),
+                      content: Text('Password telah dirubah'),
+                    ),
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Proses gagal'),
+                      content: Text(verificationStatus),
+                    ),
+                  );
+                }
+              }
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  loadKetentuan() {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Text('Ketentuan A'),
+          Text('Ketentuan B'),
+          Text('Ketentuan C'),
+          Text('Ketentuan D'),
+        ],
+      ),
+    );
+  }
+
+  loadKebijakan() {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Text('Kebijakan A'),
+          Text('Kebijakan B'),
+          Text('Kebijakan C'),
+          Text('Kebijakan D'),
+        ],
+      ),
+    );
+  }
+
+  loadBantuan() {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Text('Bantuan A'),
+          Text('Bantuan B'),
+          Text('Bantuan C'),
+          Text('Bantuan D'),
         ],
       ),
     );
@@ -90,47 +446,65 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    view = loadInitSettings();
+    if (_currentState == 0) {
+      view = loadInitSettings();
+    } else if (_currentState == 1) {
+      view = loadProfileEdit();
+    } else if (_currentState == 2) {
+      view = loadPasswordChange();
+    } else if (_currentState == 3) {
+      view = loadRoleChange();
+    } else if (_currentState == 4) {
+      view = loadKetentuan();
+    } else if (_currentState == 5) {
+      view = loadKebijakan();
+    } else if (_currentState == 6) {
+      view = loadBantuan();
+    } else {
+      view = loadInitSettings();
+    }
     return Scaffold(
       appBar: AppBarCustom(
         title: 'Profil Pengguna',
         hasBackButton: true,
       ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: new DecorationImage(
-                      fit: BoxFit.cover,
-                      image: new NetworkImage(
-                          'https://rhythmega.s-ul.eu/lBdht0Rt'),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: new DecorationImage(
+                        fit: BoxFit.cover,
+                        image: new NetworkImage(
+                            'https://rhythmega.s-ul.eu/lBdht0Rt'),
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text('MEGAtive'),
-                      Text('Administrator'),
-                    ],
-                  ),
-                )
-              ],
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text('MEGAtive'),
+                        Text('Administrator'),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          view
-        ],
+            view
+          ],
+        ),
       ),
     );
   }

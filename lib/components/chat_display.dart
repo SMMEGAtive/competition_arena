@@ -4,6 +4,7 @@ import 'package:competition_arena/models/chat_message.dart';
 import 'package:competition_arena/models/chat_message_data.dart';
 import 'package:competition_arena/models/chat_room_data.dart';
 import 'package:competition_arena/models/me_data.dart';
+import 'package:competition_arena/values/color_palette.dart';
 import 'package:flutter/material.dart';
 
 class ChatDisplay extends StatefulWidget {
@@ -52,7 +53,6 @@ class _ChatDisplayState extends State<ChatDisplay> {
                 itemCount: snapshot.data.length,
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
-                reverse: true,
 
                 //Buat build list
                 itemBuilder: (context, index) {
@@ -119,7 +119,12 @@ class Message extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var profile = Expanded(child: Text(data.idUser.toString()), flex: 2);
+    var profile = Expanded(
+        child: Padding(
+          child: Text(data.username, overflow: TextOverflow.ellipsis, maxLines: 1,),
+          padding: EdgeInsets.symmetric(horizontal: 5.0),
+        ),
+        flex: 2);
     var message = Expanded(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -128,7 +133,7 @@ class Message extends StatelessWidget {
             textAlign: TextAlign.right,
           ),
         ),
-        flex: 8);
+        flex: 7);
     var messageLeft = Expanded(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -137,17 +142,33 @@ class Message extends StatelessWidget {
             textAlign: TextAlign.left,
           ),
         ),
-        flex: 8);
+        flex: 7);
 
     var location;
 
     if (data.idUser == user) {
       location = Row(
-        children: <Widget>[message, profile],
+        children: <Widget>[
+          message,
+          Container(
+            width: 2,
+            color: ColorPalette.black,
+            height: 15,
+          ),
+          profile
+        ],
       );
     } else {
       location = Row(
-        children: <Widget>[profile, messageLeft],
+        children: <Widget>[
+          profile,
+          Container(
+            width: 2,
+            color: ColorPalette.black,
+            height: 15,
+          ),
+          messageLeft
+        ],
       );
     }
 

@@ -70,13 +70,37 @@ class ChatService {
     return regResponse;
   }
 
-  Future<ChatRoomData> doSendMessage(
+  Future<String> doSendMessageWithoutImage(
+    int idRoom,
+    int idUser,
+    String message,
+  ) async {
+    final body = jsonEncode({
+      "ID_User": idUser,
+      "Message": message,
+      "Sent_Time": "",
+      "Delivered_Time": "",
+      "Read_Time": ""
+    });
+    final response = await client.post(
+      '${api.base_url}/chat-rooms/send/$idRoom',
+      body: body,
+      headers: await api.getNormalHeaders(),
+    );
+
+    Map<String, dynamic> map = json.decode(response.body);
+    String status = map["status"];
+
+    return status;
+  }
+
+  Future<String> doSendMessageFull(
     int idRoom,
     int idUser,
     String message,
     String image,
   ) async {
-    final body = {
+    final body = jsonEncode({
       "ID_Room": idRoom,
       "ID_User": idUser,
       "Message": message,
@@ -84,19 +108,17 @@ class ChatService {
       "Sent_Time": "",
       "Delivered_Time": "",
       "Read_Time": ""
-    };
+    });
     final response = await client.post(
       '${api.base_url}/chat-rooms/send/$idRoom',
       body: body,
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
+      headers: await api.getNormalHeaders(),
     );
 
-    ChatRoomData regResponse =
-        ChatRoomData.fromJson(json.decode(response.body));
+    Map<String, dynamic> map = json.decode(response.body);
+    String status = map["status"];
 
-    return regResponse;
+    return status;
   }
 
   Future<String> doUpdateOne(int id, String roomName, List<int> member) async {

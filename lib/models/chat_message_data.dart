@@ -13,6 +13,7 @@ class ChatMessageData {
         this.idMessage,
         this.idRoom,
         this.idUser,
+        this.username,
         this.message,
         this.imageUrl,
         this.sentTime,
@@ -20,19 +21,21 @@ class ChatMessageData {
         this.readTime,
     });
 
-    final int idMessage;
-    final int idRoom;
-    final int idUser;
-    final String message;
-    final String imageUrl;
-    final DateTime sentTime;
-    final DateTime deliveredTime;
-    final DateTime readTime;
+    int idMessage;
+    int idRoom;
+    int idUser;
+    String username;
+    String message;
+    String imageUrl;
+    DateTime sentTime;
+    DateTime deliveredTime;
+    DateTime readTime;
 
     factory ChatMessageData.fromJson(Map<String, dynamic> json) => ChatMessageData(
         idMessage: json["ID_Message"],
         idRoom: json["ID_Room"],
         idUser: json["ID_User"],
+        username: json["Username"],
         message: json["Message"],
         imageUrl: json["Image_URL"],
         sentTime: DateTime.parse(json["Sent_Time"]),
@@ -44,6 +47,7 @@ class ChatMessageData {
         "ID_Message": idMessage,
         "ID_Room": idRoom,
         "ID_User": idUser,
+        "Username": username,
         "Message": message,
         "Image_URL": imageUrl,
         "Sent_Time": sentTime.toIso8601String(),

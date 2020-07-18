@@ -37,9 +37,8 @@ class UserService {
   }
 
   Future<List<UserData>> doGetList() async {
-    final response = await client.get(
-      '${api.base_url}/users/get/',
-    );
+    final response = await client.get('${api.base_url}/users/get/',
+        headers: await api.getNormalHeaders());
 
     List<dynamic> list = json.decode(response.body);
     List<UserData> listUser = new List();
@@ -55,8 +54,8 @@ class UserService {
       HttpHeaders.contentTypeHeader: "application/json",
       HttpHeaders.authorizationHeader: await api.authHeader()
     };
-    final response =
-        await client.get('${api.base_url}/users/get/$id', headers: headers);
+    final response = await client.get('${api.base_url}/users/get/$id',
+        headers: await api.getNormalHeaders());
 
     Map<String, dynamic> map = json.decode(response.body);
     UserData regResponse = UserData.fromJson(map);
@@ -70,15 +69,15 @@ class UserService {
       HttpHeaders.authorizationHeader: await api.authHeader()
     };
 
-    final response =
-        await client.get('${api.base_url}/users/me', headers: headers);
+    final response = await client.get('${api.base_url}/users/me',
+        headers: await api.getNormalHeaders());
 
     MeData regResponse = meDataFromJson(response.body);
 
     return regResponse;
   }
 
-  Future<UserData> doRegister(
+  Future<String> doRegister(
       String username,
       String password,
       String passwordVerified,
@@ -86,52 +85,53 @@ class UserService {
       String phone,
       int gender,
       String dob) async {
-    final body = {
+    final body = jsonEncode({
       "Username": username,
       "Password": password,
-      "Password_Verified": passwordVerified,
+      "Password_Verification": passwordVerified,
       "Email": email,
       "Email_Verified": false,
       "Phone": phone,
       "Role": 3,
       "Gender": gender,
       "Date_of_Birth": dob
-    };
-    final response = await client.post(
-      '${api.base_url}/users/register',
-      body: body,
-    );
+    });
+    final response = await client.post('${api.base_url}/users/register',
+        body: body, headers: await api.getNormalHeaders());
 
-    UserData regResponse = UserData.fromJson(json.decode(response.body));
+    Map<String, dynamic> regResponse = json.decode(response.body);
+    String status = regResponse["status"];
 
-    return regResponse;
+    return status;
   }
 
   Future<String> doRequestForgotPass(String email) async {
-    final body = {"email": email};
+    final body = jsonEncode({"email": email});
     final response = await client.post(
         '${api.base_url}/users/forgotpass/request',
         body: body,
         headers: await api.getNormalHeaders());
+    print(response.body);
+    Map<String, dynamic> regResponse = json.decode(response.body);
+    print(regResponse["key"]);
 
-    String regResponse = json.decode(response.body);
-
-    return regResponse;
+    return regResponse["key"];
   }
 
-  Future<String> doForgotPass(String newPass, String newPassReinput) async {
-    final body = {
+  Future<String> doForgotPass(String newPass, String newPassReinput, String email) async {
+    final body = jsonEncode({
+      "email": email,
       "new_password": newPass,
       "new_password_reinput": newPassReinput
-    };
+    });
     final response = await client.post(
         '${api.base_url}/users/forgotpass/change',
         body: body,
         headers: await api.getNormalHeaders());
 
-    String regResponse = json.decode(response.body);
+    Map<String, dynamic> regResponse = json.decode(response.body);
 
-    return regResponse;
+    return regResponse["status"];
   }
 
   Future<String> doVerifyEmail() async {
@@ -143,7 +143,7 @@ class UserService {
     return regResponse;
   }
 
-  Future<void> doChangePass(
+  Future<String> doChangePass(
       String oldPass, String newPass, String newPassReinput) async {
     final body = {
       "old_password": oldPass,
@@ -154,6 +154,8 @@ class UserService {
         body: body, headers: await api.getNormalHeaders());
 
     String regResponse = json.decode(response.body);
+
+    return regResponse;
   }
 
   Future<int> doCount() async {
@@ -166,32 +168,31 @@ class UserService {
   }
 
   Future<String> doUpdateOne(
-      int id,
       String username,
-      String password,
-      String passwordVerified,
+      String description,
       String email,
       String phone,
+      String address,
+      String affiliation,
       int gender,
       String dob) async {
-    final body = {
+    final body = jsonEncode({
       "Username": username,
-      "Password": password,
-      "Password_Verified": passwordVerified,
+      "Description": description,
       "Email": email,
-      "Email_Verified": false,
+      "Address": address,
+      "Affiliation": affiliation,
       "Phone": phone,
-      "Role": 3,
       "Gender": gender,
       "Date_of_Birth": dob
-    };
+    });
     final response = await client.patch(
-      '${api.base_url}/users/update/$id',
+      '${api.base_url}/users/update/',
       body: body,
       headers: await api.getNormalHeaders(),
     );
 
-    String status = json.decode(response.body);
+    String status = response.body;
 
     return status;
   }

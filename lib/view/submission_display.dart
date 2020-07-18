@@ -1,10 +1,50 @@
 import 'package:competition_arena/components/comment_section.dart';
+import 'package:competition_arena/http/submission_service.dart';
+import 'package:competition_arena/models/submission_data.dart';
+import 'package:competition_arena/view/judge_score.dart';
 import 'package:flutter/material.dart';
 
-class SubmissionDisplay extends StatelessWidget {
+class SubmissionDisplay extends StatefulWidget {
+  final SubmissionData data;
+  final int submissionID;
+  SubmissionDisplay({this.data, this.submissionID});
+
+  @override
+  State<StatefulWidget> createState() =>
+      _SubmissionDisplayState(data: data, submissionID: submissionID);
+}
+
+class _SubmissionDisplayState extends State<SubmissionDisplay> {
+  final SubmissionData data;
+  final int submissionID;
+
+  SubmissionData submission;
+  SubmissionService submissionService = SubmissionService();
+
+  _SubmissionDisplayState({this.data, this.submissionID});
+
+  initState() {
+    fillSubmission();
+    super.initState();
+  }
+
+  fillSubmission() async {
+    if (data != null) {
+      submission = data;
+      setState(() {
+        submission = data;
+      });
+    } else if (submissionID != null) {
+      submission = await submissionService.doGetOne(submissionID);
+      setState(() {
+        submission = submission;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    //fillSubmission();
     return Scaffold(
       body: Container(
         child: SingleChildScrollView(
@@ -28,7 +68,7 @@ class SubmissionDisplay extends StatelessWidget {
                     ),
                     Positioned(
                       child: Text(
-                        'Judul Submisi',
+                        submission.title,
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w900),
                       ),
@@ -37,7 +77,7 @@ class SubmissionDisplay extends StatelessWidget {
                     ),
                     Positioned(
                       child: Text(
-                        'Partisipan',
+                        submission.participant.participantName,
                         style: TextStyle(fontSize: 12),
                       ),
                       bottom: 60,
@@ -45,7 +85,7 @@ class SubmissionDisplay extends StatelessWidget {
                     ),
                     Positioned(
                       child: Text(
-                        'Tanggal Submit',
+                        submission.dateCreated.toString(),
                         style: TextStyle(fontSize: 12),
                       ),
                       bottom: 40,
@@ -53,7 +93,7 @@ class SubmissionDisplay extends StatelessWidget {
                     ),
                     Positioned(
                       child: Text(
-                        'Tanggal Update',
+                        submission.dateModified.toIso8601String(),
                         style: TextStyle(fontSize: 12),
                       ),
                       bottom: 20,
@@ -63,11 +103,23 @@ class SubmissionDisplay extends StatelessWidget {
                 ),
               ),
               Divider(),
-              Text('Skor'),
+              InkWell(
+                child: Text('Score'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => JudgeScore(idSubmission: submissionID,),
+                    ),
+                  );
+                },
+              ),
               Divider(),
-              Text('Deskripsi'),
+              Text(submission.description),
               Divider(),
-              CommentSection()
+              CommentSection(
+                idSubmission: submission.idSubmission,
+              )
             ],
           ),
         ),

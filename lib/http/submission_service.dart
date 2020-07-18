@@ -12,23 +12,21 @@ class SubmissionService {
   Client client = new Client();
 
   Future<List<SubmissionData>> doGetList() async {
-    final response = await client.get(
-      '${api.base_url}/submissions/get/',
-    );
+    final response = await client.get('${api.base_url}/submissions/get/',
+        headers: await api.getNormalHeaders());
 
     List<dynamic> list = json.decode(response.body);
     List<SubmissionData> listUser = new List();
     for (int i = 0; i < list.length; i++) {
-      listUser.add(SubmissionData.fromJson(json.decode(list[i])));
+      listUser.add(SubmissionData.fromJson(list[i]));
     }
 
     return listUser;
   }
 
   Future<SubmissionData> doGetOne(int id) async {
-    final response = await client.get(
-      '${api.base_url}/submissions/get/$id',
-    );
+    final response = await client.get('${api.base_url}/submissions/get/$id',
+        headers: await api.getNormalHeaders());
 
     SubmissionData regResponse =
         SubmissionData.fromJson(json.decode(response.body));
@@ -39,7 +37,7 @@ class SubmissionService {
   Future<SubmissionData> doPostOne(
       int idCompetition, String link, String title, String description) async {
     final body = {
-      "ID_Competion": idCompetition,
+      "ID_Competition": idCompetition,
       "Link": link,
       "Title": title,
       "Description": description
@@ -47,9 +45,7 @@ class SubmissionService {
     final response = await client.post(
       '${api.base_url}/submissions/new',
       body: body,
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
+      headers: await api.getNormalHeaders(),
     );
 
     SubmissionData regResponse =

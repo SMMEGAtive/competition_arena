@@ -4,21 +4,41 @@ import 'package:competition_arena/models/competition_data.dart';
 import 'package:flutter/material.dart';
 
 class CompetitionList extends StatefulWidget {
+  final String keyword;
+  final List<String> tags;
+
+  CompetitionList({this.keyword, this.tags});
   @override
-  State<StatefulWidget> createState() => _CompetitionListState();
+  State<StatefulWidget> createState() =>
+      _CompetitionListState(keyword: keyword, tags: tags);
 }
 
 class _CompetitionListState extends State<CompetitionList> {
   CompetitionService compService = new CompetitionService();
   Future<List<CompetitionData>> comps;
+  final String keyword;
+  final List<String> tags;
+
+  _CompetitionListState({this.keyword, this.tags});
+
   @override
   void initState() {
-    //comps = compService.doGetList();
+    getComps();
     super.initState();
   }
 
   Future<List<CompetitionData>> getComps() async {
-    comps = compService.doGetList();
+    if (keyword != null || tags != null) {
+      if (keyword == null && tags.length > 0) {
+        comps = compService.doGetOneFromKeyword('', tags);
+      } else if (keyword != null && (tags.length == 0 || tags == null)) {
+        comps = compService.doGetOneFromKeyword(keyword, ['none']);
+      } else {
+        comps = compService.doGetOneFromKeyword(keyword, tags);
+      }
+    } else {
+      comps = compService.doGetList();
+    }
     return comps;
   }
 

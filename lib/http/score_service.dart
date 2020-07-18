@@ -51,17 +51,15 @@ class ScoreService {
   }
 
   Future<ScoreData> doPostOne(int idSubmission, int score, String impression) async {
-    final body = {
+    final body = jsonEncode({
       "ID_Submission": idSubmission,
       "Score": score,
       "Impression": impression
-    };
+    });
     final response = await client.post(
       '${api.base_url}/scores/new',
       body: body,
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
+      headers: await api.getNormalHeaders(),
     );
 
     ScoreData regResponse =

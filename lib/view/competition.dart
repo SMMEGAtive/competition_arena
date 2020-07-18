@@ -168,7 +168,7 @@ class _CompetitionState extends State<Competition> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SubmissionList(),
+                              builder: (context) => SubmissionList(idCompetition: data.idCompetition,),
                             ),
                           );
                         },

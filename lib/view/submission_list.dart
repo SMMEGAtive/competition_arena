@@ -1,7 +1,30 @@
+import 'package:competition_arena/http/submission_service.dart';
+import 'package:competition_arena/models/submission_data.dart';
 import 'package:competition_arena/view/submission_display.dart';
+import 'package:competition_arena/view/submission_submit.dart';
 import 'package:flutter/material.dart';
 
-class SubmissionList extends StatelessWidget {
+class SubmissionList extends StatefulWidget {
+  final int idCompetition;
+
+  SubmissionList({this.idCompetition});
+  @override
+  State<StatefulWidget> createState() =>
+      _SubmissionListState(idCompetition: idCompetition);
+}
+
+class _SubmissionListState extends State<SubmissionList> {
+  final int idCompetition;
+  SubmissionService submissionService = SubmissionService();
+  Future<List<SubmissionData>> list;
+
+  _SubmissionListState({this.idCompetition});
+
+  Future<List<SubmissionData>> getSubmission() async {
+    list = submissionService.doGetList();
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -20,34 +43,78 @@ class SubmissionList extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(thickness: 2,),
+            Divider(
+              thickness: 2,
+            ),
             Container(
               child: SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    SubmissionListItem(
-                      title: 'A',
-                      participant: 'Partisipan A',
-                      imgUrl: 'https://rhythmega.s-ul.eu/y4E3hmm6',
-                    ),
-                    SubmissionListItem(
-                      participant: 'Partisipan B',
-                      imgUrl: 'https://rhythmega.s-ul.eu/y4E3hmm6',
-                    ),
-                    SubmissionListItem(
-                      title: 'C',
-                      participant: 'Partisipan C',
-                    ),
-                    SubmissionListItem(
-                      title: 'D',
-                      imgUrl: 'https://rhythmega.s-ul.eu/y4E3hmm6',
-                    ),
-                  ],
+                child: FutureBuilder(
+                  future: getSubmission(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<SubmissionData>> snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView.builder(
+                        //itemCount harus dibikin dinamis nanti
+                        itemCount: snapshot.data.length,
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+
+                        //Buat build list
+                        itemBuilder: (context, index) {
+                          return SubmissionListItem(
+                            title: snapshot.data[index].title,
+                            participant:
+                                snapshot.data[index].participant.participantName,
+                            idSubmission: snapshot.data[index].idSubmission,
+                          );
+                        },
+                      );
+                    } else if (snapshot.hasError) {
+                      return Column(
+                        children: <Widget>[
+                          Icon(
+                            Icons.error_outline,
+                            color: Colors.red,
+                            size: 60,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Text('Error: ${snapshot.error}'),
+                          )
+                        ],
+                      );
+                    } else {
+                      return Column(
+                        children: <Widget>[
+                          SizedBox(
+                            child: CircularProgressIndicator(),
+                            width: 60,
+                            height: 60,
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(top: 16),
+                            child: Text('Awaiting result...'),
+                          )
+                        ],
+                      );
+                    }
+                  },
                 ),
               ),
             )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Text('+'),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SubmissionSubmit(),
+            ),
+          );
+        },
       ),
     );
   }
@@ -57,8 +124,14 @@ class SubmissionListItem extends StatelessWidget {
   final String title;
   final String participant;
   final String imgUrl;
+  final int idSubmission;
 
-  SubmissionListItem({this.title, this.participant, this.imgUrl});
+  SubmissionListItem({
+    this.title,
+    this.participant,
+    this.imgUrl,
+    this.idSubmission,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +144,9 @@ class SubmissionListItem extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => SubmissionDisplay(),
+                builder: (context) => SubmissionDisplay(
+                  submissionID: idSubmission,
+                ),
               ),
             );
           },

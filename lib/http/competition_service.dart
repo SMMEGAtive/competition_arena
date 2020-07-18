@@ -15,13 +15,14 @@ class CompetitionService {
       HttpHeaders.authorizationHeader: await api.authHeader()
     };
 
-    final response =
-        await client.get('${api.base_url}/competitions/get/', headers: headers);
+    final response = await client.get('${api.base_url}/competitions/get/',
+        headers: await api.getNormalHeaders());
 
     List<dynamic> list = json.decode(response.body);
+    print(list.length);
     List<CompetitionData> listCompetition = List();
     for (int i = 0; i < list.length; i++) {
-      listCompetition.add(competitionDataFromJson(list[i]));
+      listCompetition.add(CompetitionData.fromJson(list[i]));
     }
 
     return listCompetition;
@@ -48,24 +49,32 @@ class CompetitionService {
 
     print(response);
 
-    CompetitionData regResponse =
-        competitionDataFromJson(response.body);
+    CompetitionData regResponse = competitionDataFromJson(response.body);
 
     return regResponse;
   }
 
   Future<List<CompetitionData>> doGetOneFromKeyword(
       String keyword, List<String> tags) async {
-    final body = {"keyword": keyword, "tags": tags};
+    var body = '';
+    if (tags == null || tags.length == 0 || tags[0] == "none") {
+      if (keyword == null) {
+        body = jsonEncode({"keyword": ''});
+      } else {
+        body = jsonEncode({"keyword": keyword});
+      }
+    } else {
+      body = jsonEncode({"keyword": keyword, "tags": tags});
+    }
     final response = await client.post(
-      '${api.base_url}/competitions/get/keyword',
-      body: body,
-    );
+        '${api.base_url}/competitions/get/keyword',
+        body: body,
+        headers: await api.getNormalHeaders());
 
     List<dynamic> list = json.decode(response.body);
     List<CompetitionData> listCompetition = new List();
     for (int i = 0; i < list.length; i++) {
-      listCompetition.add(CompetitionData.fromJson(json.decode(list[i])));
+      listCompetition.add(CompetitionData.fromJson(list[i]));
     }
 
     return listCompetition;
@@ -82,7 +91,7 @@ class CompetitionService {
       String executionEnd,
       String announcementDate,
       List<String> tags) async {
-    final body = {
+    final body = jsonEncode({
       "ID_Host": idHost,
       "Title": title,
       "Description": description,
@@ -93,13 +102,11 @@ class CompetitionService {
       "Execution_End": executionEnd,
       "Announcement_Date": announcementDate,
       "Tags": tags,
-    };
+    });
     final response = await client.post(
       '${api.base_url}/competitions/new',
       body: body,
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
+      headers: await api.getNormalHeaders(),
     );
 
     CompetitionData regResponse =
