@@ -158,7 +158,7 @@ class _ProfileState extends State<Profile> {
                           ),
                           body: TabBarView(
                             children: [
-                              Text(snapshot.data.description),
+                              Text((snapshot.data.description != null ? snapshot.data.description : 'Test')),
                               Icon(Icons.directions_transit),
                               Icon(Icons.directions_bike),
                             ],

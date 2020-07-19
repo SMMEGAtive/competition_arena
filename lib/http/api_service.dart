@@ -4,7 +4,7 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiServices {
-  String base_url = "https://b83db5b5fe09.ngrok.io";
+  String base_url = "https://8d197392d0f3.ngrok.io";
   Client client = Client();
 
   Future<String> authHeader() async {

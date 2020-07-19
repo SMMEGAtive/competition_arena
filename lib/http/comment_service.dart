@@ -51,7 +51,7 @@ class CommentService {
   }
 
   Future<CommentData> doPostOne(int idSubmission, String content) async {
-    final body = {"ID_Submission": idSubmission, "Content": content};
+    final body = jsonEncode({"ID_Submission": idSubmission, "Content": content});
     final response = await client.post(
       '${api.base_url}/comments/new',
       body: body,
@@ -65,7 +65,7 @@ class CommentService {
 
   Future<CommentData> doReply(
       int idParent, int idSubmission, String content) async {
-    final body = {"ID_Submission": idSubmission, "Content": content};
+    final body = jsonEncode({"ID_Submission": idSubmission, "Content": content});
     final response = await client.post(
       '${api.base_url}/comments/reply/$idParent',
       body: body,

@@ -63,8 +63,8 @@ class _SubmissionListState extends State<SubmissionList> {
                         itemBuilder: (context, index) {
                           return SubmissionListItem(
                             title: snapshot.data[index].title,
-                            participant:
-                                snapshot.data[index].participant.participantName,
+                            participant: snapshot
+                                .data[index].participant.participantName,
                             idSubmission: snapshot.data[index].idSubmission,
                           );
                         },
@@ -111,7 +111,9 @@ class _SubmissionListState extends State<SubmissionList> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => SubmissionSubmit(),
+              builder: (context) => SubmissionSubmit(
+                idCompetition: idCompetition,
+              ),
             ),
           );
         },

@@ -1,6 +1,8 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
 import 'package:competition_arena/components/category_listing.dart';
 import 'package:competition_arena/components/competition_list.dart';
+import 'package:competition_arena/http/user_service.dart';
+import 'package:competition_arena/models/me_data.dart';
 import 'package:competition_arena/values/color_palette.dart';
 import 'package:competition_arena/view/competition_meta.dart';
 import 'package:competition_arena/view/competition_submit.dart';
@@ -14,6 +16,13 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int status;
+  UserService userService = UserService();
+  Future<MeData> me;
+
+  Future<MeData> getMe() {
+    me = userService.doGetLogged();
+    return me;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,17 +63,56 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Text('+'),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CompetitionSubmit(),
-            ),
+      floatingActionButton: FutureBuilder(
+        future: getMe(),
+          builder: (BuildContext context, AsyncSnapshot<MeData> snapshot) {
+        if (snapshot.hasData) {
+          print(snapshot.data.role);
+          if (snapshot.data.role == 1 || snapshot.data.role == 2) {
+            return FloatingActionButton(
+              child: Text('+'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CompetitionSubmit(),
+                  ),
+                );
+              },
+            );
+          } else {
+            return Container();
+          }
+        } else if (snapshot.hasError) {
+          return Column(
+            children: <Widget>[
+              Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 60,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Text('Error: ${snapshot.error}'),
+              )
+            ],
           );
-        },
-      ),
+        } else {
+          return Column(
+            children: <Widget>[
+              SizedBox(
+                child: CircularProgressIndicator(),
+                width: 60,
+                height: 60,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text('Awaiting result...'),
+              )
+            ],
+          );
+        }
+      }),
     );
   }
 }

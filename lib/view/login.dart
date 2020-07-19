@@ -41,110 +41,112 @@ class _LoginState extends State<Login> {
       ),
       body: Container(
         padding: EdgeInsets.all(15),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: email,
-              decoration: InputDecoration(
-                labelText: 'Nama Pengguna / Email / Nomor Handphone',
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              TextField(
+                controller: email,
+                decoration: InputDecoration(
+                  labelText: 'Nama Pengguna / Email / Nomor Handphone',
+                ),
               ),
-            ),
-            TextField(
-              controller: password,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Password',
+              TextField(
+                controller: password,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                ),
               ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 5),
-              child: ButtonPrimary(
-                text: 'Login',
-                onPress: () {
-                  if (email.text.length != 0 && password.text.length != 0) {
-                    UserService userService = new UserService();
-                    userService.doLogin(email.text, password.text).then((data) {
-                      if (data.toString() == "failed") {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Login gagal'),
-                            content:
-                                Text('Periksa kembali email dan password anda'),
-                          ),
-                        );
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PrimaryPage(),
-                          ),
-                        );
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Login berhasil'),
-                            content:
-                                Text('Selamat datang,'),
-                          ),
-                        );
-                      }
-                    });
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Login gagal'),
-                        content: Text('Isi kedua textfield yang disediakan'),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5),
+                child: ButtonPrimary(
+                  text: 'Login',
+                  onPress: () {
+                    if (email.text.length != 0 && password.text.length != 0) {
+                      UserService userService = new UserService();
+                      userService
+                          .doLogin(email.text, password.text)
+                          .then((data) {
+                        if (data.toString() == "failed") {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Login gagal'),
+                              content: Text(
+                                  'Periksa kembali email dan password anda'),
+                            ),
+                          );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PrimaryPage(),
+                            ),
+                          );
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Login berhasil'),
+                              content: Text('Selamat datang,'),
+                            ),
+                          );
+                        }
+                      });
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text('Login gagal'),
+                          content: Text('Isi kedua textfield yang disediakan'),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5),
+                child: ButtonPrimary(
+                  text: 'Masuk tanpa Login',
+                  onPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PrimaryPage(),
                       ),
                     );
-                  }
-                },
+                  },
+                ),
               ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 5),
-              child: ButtonPrimary(
-                text: 'Masuk tanpa Login',
-                onPress: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PrimaryPage(),
-                    ),
-                  );
-                },
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 15),
+                child: InkWell(
+                  child: Text('Lupa Password?'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ForgotPassword(),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 15),
-              child: InkWell(
-                child: Text('Lupa Password?'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ForgotPassword(),
-                    ),
-                  );
-                },
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 15),
+                child: InkWell(
+                  child: Text('Belum punya Akun? Daftar'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Register(),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 15),
-              child: InkWell(
-                child: Text('Belum punya Akun? Daftar'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Register(),
-                    ),
-                  );
-                },
-              ),
-            ),
-            /* Container(
+              /* Container(
               child: InkWell(
                 child: Text('shortcut'),
                 onTap: () {
@@ -158,7 +160,8 @@ class _LoginState extends State<Login> {
               ),
             ),
             Text(text) */
-          ],
+            ],
+          ),
         ),
       ),
     );

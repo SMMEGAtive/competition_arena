@@ -59,7 +59,7 @@ class UserData {
         affiliation: json["Affiliation"],
         gender: json["Gender"],
         dateOfBirth: DateTime.parse(json["Date_of_Birth"]),
-        avatarPath: json["Avatar_Path"].substring(8),
+        avatarPath: json["Avatar_Path"],
       );
 
   Map<String, dynamic> toJson() => {

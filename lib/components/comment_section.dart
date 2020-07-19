@@ -158,9 +158,9 @@ class Comment extends StatelessWidget {
   Widget build(BuildContext context) {
     var avatar;
     if (avatarUrl.isEmpty) {
-      avatar = 'https://gbf.wiki/File:Weapon_b_1040008000.png';
+      avatar = 'https://zenius-i-vanisher.com/simfiles/Z-I-v%20Summer%20Contest%202020/Angelfalse/Angelfalse-jacket.png';
     } else {
-      avatar = api.getBaseUrl() + '/' + avatarUrl;
+      avatar = api.getBaseUrl() + '/' + avatarUrl.substring(8);
     }
 
     var delete;

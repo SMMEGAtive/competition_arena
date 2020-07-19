@@ -49,7 +49,7 @@ class HorizontalBarChart extends StatelessWidget {
 
 class OrdinalParticipation {
   final String label;
-  final int count;
+  final double count;
 
   OrdinalParticipation(this.label, this.count);
 }

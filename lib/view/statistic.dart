@@ -1,6 +1,8 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
 import 'package:competition_arena/components/button_custom.dart';
 import 'package:competition_arena/components/charts.dart';
+import 'package:competition_arena/http/statistic_service.dart';
+import 'package:competition_arena/models/statistic_data.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
@@ -10,6 +12,9 @@ class Statistic extends StatefulWidget {
 }
 
 class _StatisticState extends State<Statistic> {
+  StatisticService statisticService = StatisticService();
+  Future<List<StatisticData>> list;
+
   // Chart State
   var detailed = false;
   var simple = true;
@@ -25,6 +30,12 @@ class _StatisticState extends State<Statistic> {
     } else {
       HorizontalBarChart(_createSampleData());
     }
+  }
+
+  Future<List<StatisticData>> getData() {
+    list = statisticService.getStat();
+
+    return list;
   }
 
   interfaceLoading() {
@@ -80,7 +91,7 @@ class _StatisticState extends State<Statistic> {
     if (simple) {
       if (mahasiswa) {
         if (win) {
-          return HorizontalBarChart(_createSampleData());
+          return _createSampleData();
         } else if (participation) {
           return Text('Chart Simple Mahasiswa Participation');
         } else if (ratio) {
@@ -110,8 +121,8 @@ class _StatisticState extends State<Statistic> {
     }
   }
 
-  static List<charts.Series<OrdinalParticipation, String>> _createSampleData() {
-    final data = [
+  _createSampleData() {
+    /* final data = [
       new OrdinalParticipation('PNJ', 15),
       new OrdinalParticipation('UI', 15),
       new OrdinalParticipation('Gundar', 12),
@@ -122,20 +133,67 @@ class _StatisticState extends State<Statistic> {
       new OrdinalParticipation('UPNVYK', 10),
       new OrdinalParticipation('IPB', 15),
       new OrdinalParticipation('Binus', 15),
-    ];
+    ]; */
 
-    return [
-      new charts.Series(
-        id: 'Participation',
-        data: data,
-        domainFn: (OrdinalParticipation participation, _) =>
-            participation.label,
-        measureFn: (OrdinalParticipation participation, _) =>
-            participation.count,
-        labelAccessorFn: (OrdinalParticipation participation, _) =>
-            '${participation.label}: ${participation.count.toString()}',
-      )
-    ];
+    var futura = FutureBuilder(
+        future: getData(),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<StatisticData>> snapshot) {
+          if (snapshot.hasData) {
+            List<OrdinalParticipation> viewData = [];
+
+            snapshot.data.sort((a, b) => b.winRatio - a.winRatio);
+            for (int i = 0; i < snapshot.data.length; i++) {
+              viewData.add(OrdinalParticipation(
+                  snapshot.data[i].username, snapshot.data[i].winRatio));
+            }
+
+            var sample = [
+              new charts.Series(
+                id: 'Participation',
+                data: viewData,
+                domainFn: (OrdinalParticipation participation, _) =>
+                    participation.label,
+                measureFn: (OrdinalParticipation participation, _) =>
+                    participation.count,
+                labelAccessorFn: (OrdinalParticipation participation, _) =>
+                    '${participation.label}: ${participation.count.toString()}',
+              )
+            ];
+
+            return HorizontalBarChart(sample);
+          } else if (snapshot.hasError) {
+            return Column(
+              children: <Widget>[
+                Icon(
+                  Icons.error_outline,
+                  color: Colors.red,
+                  size: 60,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: Text('Error: ${snapshot.error}'),
+                )
+              ],
+            );
+          } else {
+            return Column(
+              children: <Widget>[
+                SizedBox(
+                  child: CircularProgressIndicator(),
+                  width: 60,
+                  height: 60,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text('Awaiting result...'),
+                )
+              ],
+            );
+          }
+        });
+
+    return futura;
   }
 
   @override
@@ -206,7 +264,9 @@ class _StatisticState extends State<Statistic> {
               ),
             ),
             interfaceLoading(),
-            Flexible(child: chartLoading(),)
+            Flexible(
+              child: chartLoading(),
+            )
           ],
         ),
       ),

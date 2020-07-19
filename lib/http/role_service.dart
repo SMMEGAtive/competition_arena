@@ -40,9 +40,7 @@ class RoleService {
   Future<RoleChangeRequestData> doPostOne() async {
     final response = await client.post(
       '${api.base_url}/role-change-requests/new',
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
+      headers: await api.getNormalHeaders(),
     );
 
     RoleChangeRequestData regResponse =

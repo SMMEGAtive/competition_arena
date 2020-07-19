@@ -34,24 +34,23 @@ class SubmissionService {
     return regResponse;
   }
 
-  Future<SubmissionData> doPostOne(
+  Future<String> doPostOne(
       int idCompetition, String link, String title, String description) async {
-    final body = {
+    final body = jsonEncode({
       "ID_Competition": idCompetition,
       "Link": link,
       "Title": title,
       "Description": description
-    };
+    });
     final response = await client.post(
       '${api.base_url}/submissions/new',
       body: body,
       headers: await api.getNormalHeaders(),
     );
 
-    SubmissionData regResponse =
-        SubmissionData.fromJson(json.decode(response.body));
+    String status = response.body;
 
-    return regResponse;
+    return status;
   }
 
   Future<String> doUpdateOne(int id, int idCompetition, String link,

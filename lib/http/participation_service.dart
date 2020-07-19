@@ -92,19 +92,17 @@ class ParticipationService {
   }
 
   Future<ParticipationData> doPostOne(int idParticipant, int idCompetition) async {
-    final body = {
+    final body = jsonEncode({
       "ID_Participant": idParticipant,
       "ID_Competition": idCompetition,
-    };
+    });
     final response = await client.post(
       '${api.base_url}/participations/new',
       body: body,
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
+      headers: await api.getNormalHeaders(),
     );
 
-    ParticipationData regResponse = ParticipationData.fromJson(json.decode(response.body));
+    ParticipationData regResponse = participationDataFromJson(response.body);
 
     return regResponse;
   }

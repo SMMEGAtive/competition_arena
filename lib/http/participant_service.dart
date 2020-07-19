@@ -35,23 +35,19 @@ class ParticipantService {
     return regResponse;
   }
 
-  Future<ParticipantData> doPostOne(String hostName, List<int> members) async {
-    final body = {
+  Future<int> doPostOne(String hostName, List<int> members) async {
+    final body = jsonEncode({
       "Team_Name": hostName,
       "Members": members,
-    };
+    });
+
     final response = await client.post(
       '${api.base_url}/participants/new',
       body: body,
-      headers: <String, String>{
-        'Authorization': await api.authHeader(),
-      },
+      headers: await api.getNormalHeaders(),
     );
 
-    ParticipantData regResponse =
-        ParticipantData.fromJson(json.decode(response.body));
-
-    return regResponse;
+    return int.parse(response.body);
   }
 
   Future<String> doUpdateOne(int id, String hostName, List<int> members) async {

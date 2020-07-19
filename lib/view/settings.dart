@@ -1,10 +1,14 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
 import 'package:competition_arena/components/button_custom.dart';
+import 'package:competition_arena/http/role_service.dart';
+import 'package:competition_arena/http/role_service.dart';
 import 'package:competition_arena/http/user_service.dart';
 import 'package:competition_arena/models/me_data.dart';
 import 'package:competition_arena/models/user_data.dart';
 import 'package:competition_arena/values/color_palette.dart';
 import 'package:competition_arena/view/login.dart';
+import 'package:competition_arena/view/primary_page.dart';
+import 'package:competition_arena/view/profile.dart';
 import 'package:competition_arena/view/profile_edit.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +21,7 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   UserService userService = UserService();
+  RoleService roleService = RoleService();
   Future<UserData> user;
   TextEditingController username;
   int gender;
@@ -370,34 +375,31 @@ class _SettingsState extends State<Settings> {
             color: ColorPalette.darkBlue_400,
             text: 'Simpan',
             onPress: () {
-              if (oldPass.text.length != 0 ||
-                  newPass.text.length != 0 ||
-                  newPassValidation.text.length != 0) {
-                verify();
-                if (verificationStatus == 'Success') {
+              roleService.doPostOne().then((data) {
+                if (data != null) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Login(),
+                      builder: (context) => PrimaryPage(),
                     ),
                   );
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text('Proses berhasil'),
-                      content: Text('Password telah dirubah'),
+                      title: Text('Berhasil'),
+                      content: Text('Request berhasil'),
                     ),
                   );
                 } else {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text('Proses gagal'),
-                      content: Text(verificationStatus),
+                      title: Text('Error'),
+                      content: Text('Error'),
                     ),
                   );
                 }
-              }
+              });
             },
           )
         ],

@@ -3,6 +3,7 @@ import 'package:competition_arena/components/comment_section.dart';
 import 'package:competition_arena/http/comment_service.dart';
 import 'package:competition_arena/models/comment_data.dart';
 import 'package:competition_arena/view/submission_display.dart';
+import 'package:competition_arena/view/submission_list.dart';
 import 'package:flutter/material.dart';
 
 class CommentSubmit extends StatelessWidget {
@@ -16,7 +17,7 @@ class CommentSubmit extends StatelessWidget {
 
   send() async {
     int idParent;
-    if (idCommentParent != null) {
+    if (idCommentParent == null) {
       CommentData data =
           await commentService.doPostOne(idSubmission, comment.text);
     } else {
@@ -70,7 +71,7 @@ class CommentSubmit extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SubmissionDisplay(),
+                    builder: (context) => SubmissionList(),
                   ),
                 );
               } else {

@@ -6,6 +6,7 @@ import 'package:competition_arena/models/me_data.dart';
 import 'package:competition_arena/values/color_palette.dart';
 import 'package:competition_arena/view/chat.dart';
 import 'package:competition_arena/view/competition_meta.dart';
+import 'package:competition_arena/view/new_participation.dart';
 import 'package:competition_arena/view/submission_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -168,7 +169,9 @@ class _CompetitionState extends State<Competition> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SubmissionList(idCompetition: data.idCompetition,),
+                              builder: (context) => SubmissionList(
+                                idCompetition: data.idCompetition,
+                              ),
                             ),
                           );
                         },
@@ -203,8 +206,18 @@ class _CompetitionState extends State<Competition> {
                 padding: EdgeInsets.all(10),
                 child: ButtonCustom(
                   color: ColorPalette.green_200,
-                  onPress: () {},
-                  text: 'Button Bar',
+                  onPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NewParticipation(
+                          idCompetition: data.idCompetition,
+                          me: me,
+                        ),
+                      ),
+                    );
+                  },
+                  text: 'Daftar',
                 ),
               ),
             ),
