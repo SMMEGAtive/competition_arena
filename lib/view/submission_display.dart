@@ -109,7 +109,9 @@ class _SubmissionDisplayState extends State<SubmissionDisplay> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => JudgeScore(idSubmission: submissionID,),
+                      builder: (context) => JudgeScore(
+                        idSubmission: submissionID,
+                      ),
                     ),
                   );
                 },

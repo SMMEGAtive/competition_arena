@@ -4,6 +4,7 @@ import 'package:competition_arena/http/user_service.dart';
 import 'package:competition_arena/models/competition_data.dart';
 import 'package:competition_arena/models/me_data.dart';
 import 'package:competition_arena/values/color_palette.dart';
+import 'package:competition_arena/values/gFunction.dart';
 import 'package:competition_arena/view/chat.dart';
 import 'package:competition_arena/view/competition_meta.dart';
 import 'package:competition_arena/view/new_participation.dart';
@@ -42,17 +43,17 @@ class _CompetitionState extends State<Competition> {
       return 'Belum dibuka';
     } else if (now.isAfter(data.registrationStart) &&
         now.isBefore(data.registrationEnd)) {
-      return 'Fase Pendaftaran: ${data.registrationStart} - ${data.registrationEnd} ';
+      return '''Fase Pendaftaran: ${processDateTimeAsDate(data.registrationStart)} - ${processDateTimeAsDate(data.registrationEnd)} ''';
     } else if (now.isBefore(data.verificationEnd)) {
-      return 'Fase Verifikasi: Sebelum ${data.verificationEnd} ';
+      return '''Fase Verifikasi: Sebelum ${processDateTimeAsDate(data.verificationEnd)} ''';
     } else if (now.isAfter(data.executionStart) &&
         now.isBefore(data.executionEnd)) {
-      return 'Fase Pelaksanaan: ${data.executionStart} - ${data.executionEnd}';
+      return '''Fase Pelaksanaan: ${processDateTimeAsDate(data.executionStart)} - ${processDateTimeAsDate(data.executionEnd)} ''';
     } else if (now.isAfter(data.executionEnd) &&
         now.isBefore(data.announcementDate)) {
-      return 'Menunggu pengumuman: ${data.announcementDate} ';
+      return '''Menunggu pengumuman: ${processDateTimeAsDate(data.announcementDate)} ''';
     } else if (now.isAfter(data.announcementDate)) {
-      return 'Selesai';
+      return 'Lomba sudah selesai';
     } else {
       return 'Tidak diketahui';
     }

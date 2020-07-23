@@ -1,4 +1,5 @@
 import 'package:competition_arena/models/competition_data.dart';
+import 'package:competition_arena/values/gFunction.dart';
 import 'package:competition_arena/view/competition.dart';
 import 'package:flutter/material.dart';
 
@@ -20,20 +21,20 @@ class CompetitionItem extends StatelessWidget {
     } else if (now.isAfter(data.registrationStart) &&
         now.isBefore(data.registrationEnd)) {
       return '''Fase Pendaftaran:
-      ${data.registrationStart} - ${data.registrationEnd} ''';
+      ${processDateTimeAsDate(data.registrationStart)} - ${processDateTimeAsDate(data.registrationEnd)} ''';
     } else if (now.isBefore(data.verificationEnd)) {
       return '''Fase Verifikasi:
-      Sebelum ${data.verificationEnd} ''';
+      Sebelum ${processDateTimeAsDate(data.verificationEnd)} ''';
     } else if (now.isAfter(data.executionStart) &&
         now.isBefore(data.executionEnd)) {
       return '''Fase Pelaksanaan:
-      ${data.executionStart} - ${data.executionEnd} ''';
+      ${processDateTimeAsDate(data.executionStart)} - ${processDateTimeAsDate(data.executionEnd)} ''';
     } else if (now.isAfter(data.executionEnd) &&
         now.isBefore(data.announcementDate)) {
       return '''Menunggu pengumuman:
-      ${data.announcementDate} ''';
+      ${processDateTimeAsDate(data.announcementDate)} ''';
     } else if (now.isAfter(data.announcementDate)) {
-      return 'Selesai';
+      return 'Lomba sudah selesai';
     } else {
       return 'Tidak diketahui';
     }
@@ -64,9 +65,21 @@ class CompetitionItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(data.title, overflow: TextOverflow.ellipsis, maxLines: 2,),
-              Text(getCompetitionStatus(), overflow: TextOverflow.ellipsis, maxLines: 2,),
-              Text(data.description, overflow: TextOverflow.ellipsis, maxLines: 2,),
+              Text(
+                data.title,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+              Text(
+                getCompetitionStatus(),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+              Text(
+                data.description,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
             ],
           )
         ],

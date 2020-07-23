@@ -123,10 +123,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         Text('Masukkan Password baru yang akan anda gunakan.'),
         TextField(
           controller: password,
+          obscureText: true,
           decoration: InputDecoration(labelText: 'Password Baru'),
         ),
         TextField(
           controller: passwordValidation,
+          obscureText: true,
           decoration: InputDecoration(labelText: 'Konfirmasi Password Baru'),
         ),
         ButtonPrimary(

@@ -24,14 +24,6 @@ class _StatisticState extends State<Statistic> {
   var participation = false;
   var ratio = false;
 
-  barChart(int code) {
-    if (code == 11) {
-      HorizontalBarChart(_createSampleData());
-    } else {
-      HorizontalBarChart(_createSampleData());
-    }
-  }
-
   Future<List<StatisticData>> getData() {
     list = statisticService.getStat();
 
@@ -91,21 +83,21 @@ class _StatisticState extends State<Statistic> {
     if (simple) {
       if (mahasiswa) {
         if (win) {
-          return _createSampleData();
+          return _createSampleData(1);
         } else if (participation) {
-          return Text('Chart Simple Mahasiswa Participation');
+          return _createSampleData(2);
         } else if (ratio) {
-          return Text('Chart Simple Mahasiswa Ratio');
+          return _createSampleData(3);
         } else {
           return Text('????');
         }
       } else if (school) {
         if (win) {
-          return Text('Chart Simple School Juara');
+          return _createSampleData(1);
         } else if (participation) {
-          return Text('Chart Simple School Participation');
+          return _createSampleData(2);
         } else if (ratio) {
-          return Text('Chart Simple School Ratio');
+          return _createSampleData(3);
         } else {
           return Text('????');
         }
@@ -121,7 +113,7 @@ class _StatisticState extends State<Statistic> {
     }
   }
 
-  _createSampleData() {
+  _createSampleData(int code) {
     /* final data = [
       new OrdinalParticipation('PNJ', 15),
       new OrdinalParticipation('UI', 15),
@@ -142,10 +134,43 @@ class _StatisticState extends State<Statistic> {
           if (snapshot.hasData) {
             List<OrdinalParticipation> viewData = [];
 
-            snapshot.data.sort((a, b) => b.winRatio - a.winRatio);
-            for (int i = 0; i < snapshot.data.length; i++) {
-              viewData.add(OrdinalParticipation(
-                  snapshot.data[i].username, snapshot.data[i].winRatio));
+            if (code == 1) {
+              snapshot.data.sort((a, b) => (b.winCount - a.winCount).floor());
+              for (int i = 0; i < snapshot.data.length; i++) {
+                viewData.add(
+                  OrdinalParticipation(
+                    snapshot.data[i].username,
+                    double.parse(
+                      snapshot.data[i].winCount.toString(),
+                    ),
+                  ),
+                );
+              }
+            } else if (code == 2) {
+              snapshot.data.sort((a, b) =>
+                  (b.participationCount - a.participationCount).floor());
+              for (int i = 0; i < snapshot.data.length; i++) {
+                viewData.add(
+                  OrdinalParticipation(
+                    snapshot.data[i].username,
+                    double.parse(
+                      snapshot.data[i].participationCount.toString(),
+                    ),
+                  ),
+                );
+              }
+            } else if (code == 3) {
+              snapshot.data.sort((a, b) => (b.winRatio - a.winRatio).floor());
+              for (int i = 0; i < snapshot.data.length; i++) {
+                viewData.add(
+                  OrdinalParticipation(
+                    snapshot.data[i].username,
+                    double.parse(
+                      snapshot.data[i].winRatio.toString(),
+                    ),
+                  ),
+                );
+              }
             }
 
             var sample = [

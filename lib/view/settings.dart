@@ -1,18 +1,20 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
 import 'package:competition_arena/components/button_custom.dart';
+import 'package:competition_arena/http/api_service.dart';
 import 'package:competition_arena/http/role_service.dart';
 import 'package:competition_arena/http/role_service.dart';
 import 'package:competition_arena/http/user_service.dart';
 import 'package:competition_arena/models/me_data.dart';
 import 'package:competition_arena/models/user_data.dart';
 import 'package:competition_arena/values/color_palette.dart';
+import 'package:competition_arena/values/gFunction.dart';
 import 'package:competition_arena/view/login.dart';
 import 'package:competition_arena/view/primary_page.dart';
 import 'package:competition_arena/view/profile.dart';
-import 'package:competition_arena/view/profile_edit.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -22,6 +24,7 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   UserService userService = UserService();
   RoleService roleService = RoleService();
+  ApiServices api = ApiServices();
   Future<UserData> user;
   TextEditingController username;
   int gender;
@@ -107,11 +110,37 @@ class _SettingsState extends State<Settings> {
           SettingsItem(
             text: 'Keluar',
             onPress: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Login(),
-                ),
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                      title: Text('Konfirmasi'),
+                      content: SingleChildScrollView(
+                        child: Text('Apakah anda yakin ingin log out?'),
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Ya'),
+                          onPressed: () {
+                            clearLog();
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Login(),
+                              ),
+                            );
+                          },
+                        ),
+                        FlatButton(
+                          child: Text('Tidak'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ]);
+                },
               );
             },
           ),
@@ -122,198 +151,213 @@ class _SettingsState extends State<Settings> {
 
   loadProfileEdit() {
     return Container(
-        child: SingleChildScrollView(
-      child: FutureBuilder(
-        future: loadUserData(),
-        builder: (BuildContext context, AsyncSnapshot<UserData> snapshot) {
-          if (snapshot.hasData) {
-            username = TextEditingController(text: snapshot.data.username);
-            gender = snapshot.data.gender;
-            phone = TextEditingController(text: snapshot.data.phone);
-            dob = TextEditingController(
-                text: snapshot.data.dateOfBirth.toString());
-            email = TextEditingController(text: snapshot.data.email);
-            description =
-                TextEditingController(text: snapshot.data.description);
-            address = TextEditingController(text: snapshot.data.address);
-            affiliation =
-                TextEditingController(text: snapshot.data.affiliation);
-            return Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: TextField(
-                    controller: username,
-                    decoration: InputDecoration(labelText: 'Nama Pengguna'),
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      child: SingleChildScrollView(
+        child: FutureBuilder(
+          future: loadUserData(),
+          builder: (BuildContext context, AsyncSnapshot<UserData> snapshot) {
+            if (snapshot.hasData) {
+              username = TextEditingController(text: snapshot.data.username);
+              gender = snapshot.data.gender;
+              phone = TextEditingController(text: snapshot.data.phone);
+              dob = TextEditingController(
+                  text: snapshot.data.dateOfBirth.toString());
+              email = TextEditingController(text: snapshot.data.email);
+              description =
+                  TextEditingController(text: snapshot.data.description);
+              address = TextEditingController(text: snapshot.data.address);
+              affiliation =
+                  TextEditingController(text: snapshot.data.affiliation);
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    child: TextField(
+                      controller: username,
+                      decoration: InputDecoration(labelText: 'Nama Pengguna'),
+                    ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Radio(
-                            value: 1,
-                            groupValue: gender,
-                            onChanged: (int value) {
-                              setState(() {
-                                gender = value;
-                              });
-                            },
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 15.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          child: Text('Jenis Kelamin'),
+                        ),
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Radio(
+                                    value: 1,
+                                    groupValue: gender,
+                                    onChanged: (int value) {
+                                      setState(() {
+                                        gender = value;
+                                      });
+                                    },
+                                  ),
+                                  Text('Pria')
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Radio(
+                                    value: 2,
+                                    groupValue: gender,
+                                    onChanged: (int value) {
+                                      setState(() {
+                                        gender = value;
+                                      });
+                                    },
+                                  ),
+                                  Text('Wanita')
+                                ],
+                              ),
+                            ],
                           ),
-                          Text('Pria')
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Radio(
-                            value: 2,
-                            groupValue: gender,
-                            onChanged: (int value) {
-                              setState(() {
-                                gender = value;
-                              });
-                            },
-                          ),
-                          Text('Wanita')
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                TextField(
-                  decoration: InputDecoration(labelText: 'Jenis Kelamin'),
-                ),
-                TextField(
-                  controller: phone,
-                  decoration: InputDecoration(labelText: 'Nomor Handphone'),
-                ),
-                DateTimeField(
-                  format: format,
-                  onShowPicker: (context, currentValue) {
-                    return showDatePicker(
-                        context: context,
-                        firstDate: DateTime(1900),
-                        initialDate: currentValue ?? DateTime.now(),
-                        lastDate: DateTime(2100));
-                  },
-                  controller: dob,
-                  decoration: InputDecoration(labelText: 'Tanggal Lahir'),
-                ),
-                TextField(
-                  controller: email,
-                  decoration: InputDecoration(labelText: 'Email'),
-                ),
-                TextField(
-                  controller: description,
-                  decoration: InputDecoration(labelText: 'Deskripsi'),
-                ),
-                TextField(
-                  controller: address,
-                  decoration: InputDecoration(labelText: 'Alamat'),
-                ),
-                TextField(
-                  controller: affiliation,
-                  decoration: InputDecoration(labelText: 'Afiliasi'),
-                ),
-                ButtonCustom(
-                  text: 'Simpan',
-                  onPress: () {
-                    userService
-                        .doUpdateOne(
-                            username.text,
-                            description.text,
-                            email.text,
-                            phone.text,
-                            address.text,
-                            affiliation.text,
-                            gender,
-                            dob.text)
-                        .then((verificationStatus) {
-                      if (verificationStatus == 'Success') {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Login(),
-                          ),
-                        );
-                        showDialog(
+                  TextField(
+                    controller: phone,
+                    decoration: InputDecoration(labelText: 'Nomor Handphone'),
+                  ),
+                  DateTimeField(
+                    format: format,
+                    onShowPicker: (context, currentValue) {
+                      return showDatePicker(
                           context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Proses berhasil'),
-                            content: Text('Update berhasil'),
-                          ),
-                        );
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Proses gagal'),
-                            content: Text(verificationStatus),
-                          ),
-                        );
-                      }
-                    });
-                  },
-                  color: ColorPalette.green_300,
-                )
-              ],
-            );
-          } else if (snapshot.hasError) {
-            return Column(
-              children: <Widget>[
-                Icon(
-                  Icons.error_outline,
-                  color: Colors.red,
-                  size: 60,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: Text('Error: ${snapshot.error}'),
-                )
-              ],
-            );
-          } else {
-            return Column(
-              children: <Widget>[
-                SizedBox(
-                  child: CircularProgressIndicator(),
-                  width: 60,
-                  height: 60,
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 16),
-                  child: Text('Awaiting result...'),
-                )
-              ],
-            );
-          }
-        },
+                          firstDate: DateTime(1900),
+                          initialDate: currentValue ?? DateTime.now(),
+                          lastDate: DateTime(2100));
+                    },
+                    controller: dob,
+                    decoration: InputDecoration(labelText: 'Tanggal Lahir'),
+                  ),
+                  TextField(
+                    controller: email,
+                    decoration: InputDecoration(labelText: 'Email'),
+                  ),
+                  TextField(
+                    controller: description,
+                    decoration: InputDecoration(labelText: 'Deskripsi'),
+                  ),
+                  TextField(
+                    controller: address,
+                    decoration: InputDecoration(labelText: 'Alamat'),
+                  ),
+                  TextField(
+                    controller: affiliation,
+                    decoration: InputDecoration(labelText: 'Afiliasi'),
+                  ),
+                  ButtonCustom(
+                    text: 'Simpan',
+                    onPress: () {
+                      userService
+                          .doUpdateOne(
+                              username.text,
+                              description.text,
+                              email.text,
+                              phone.text,
+                              address.text,
+                              affiliation.text,
+                              gender,
+                              dob.text)
+                          .then((verificationStatus) {
+                        if (verificationStatus == 'Success') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Login(),
+                            ),
+                          );
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Proses berhasil'),
+                              content: Text('Update berhasil'),
+                            ),
+                          );
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Proses gagal'),
+                              content: Text(verificationStatus),
+                            ),
+                          );
+                        }
+                      });
+                    },
+                    color: ColorPalette.green_300,
+                  )
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return Column(
+                children: <Widget>[
+                  Icon(
+                    Icons.error_outline,
+                    color: Colors.red,
+                    size: 60,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: Text('Error: ${snapshot.error}'),
+                  )
+                ],
+              );
+            } else {
+              return Column(
+                children: <Widget>[
+                  SizedBox(
+                    child: CircularProgressIndicator(),
+                    width: 60,
+                    height: 60,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text('Awaiting result...'),
+                  )
+                ],
+              );
+            }
+          },
+        ),
       ),
-    ));
+    );
   }
 
   loadPasswordChange() {
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
       child: Column(
         children: <Widget>[
           TextField(
             controller: oldPass,
-            decoration: InputDecoration(labelText: 'Email'),
+            obscureText: true,
+            decoration:
+                InputDecoration(labelText: 'Password yang saat ini digunakan'),
           ),
           TextField(
             controller: newPass,
-            decoration: InputDecoration(labelText: 'Deskripsi'),
+            obscureText: true,
+            decoration: InputDecoration(labelText: 'Password Baru'),
           ),
           TextField(
             controller: newPassValidation,
-            decoration: InputDecoration(labelText: 'Alamat'),
+            obscureText: true,
+            decoration: InputDecoration(labelText: 'Input Password Baru ulang'),
           ),
           ButtonCustom(
             color: ColorPalette.darkBlue_400,
@@ -368,12 +412,21 @@ class _SettingsState extends State<Settings> {
 
   loadRoleChange() {
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Ganti peran'),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 10.0),
+            child: Text(
+              'Dengan menekan tombol ini, anda akan melakukan permintaan elevasi peran dari pengguna biasa menjadi seorang penyelenggara lomba',
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
           ButtonCustom(
-            color: ColorPalette.darkBlue_400,
-            text: 'Simpan',
+            color: ColorPalette.darkBlue_500,
+            text: 'Lakukan permintaan',
             onPress: () {
               roleService.doPostOne().then((data) {
                 if (data != null) {
@@ -478,31 +531,125 @@ class _SettingsState extends State<Settings> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: new DecorationImage(
-                        fit: BoxFit.cover,
-                        image: new NetworkImage(
-                            'https://rhythmega.s-ul.eu/lBdht0Rt'),
-                      ),
-                    ),
+                  FutureBuilder(
+                    future: loadUserData(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<UserData> snapshot) {
+                      if (snapshot.hasData) {
+                        return Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: new DecorationImage(
+                              fit: BoxFit.cover,
+                              image: new NetworkImage(
+                                (snapshot.data.avatarPath != null
+                                    ? api.base_url +
+                                        snapshot.data.avatarPath.substring(8)
+                                    : 'https://rhythmega.s-ul.eu/lBdht0Rt'),
+                              ),
+                            ),
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Column(
+                          children: <Widget>[
+                            Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 60,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: Text('Error: ${snapshot.error}'),
+                            )
+                          ],
+                        );
+                      } else {
+                        return Column(
+                          children: <Widget>[
+                            SizedBox(
+                              child: CircularProgressIndicator(),
+                              width: 60,
+                              height: 60,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Text('Awaiting result...'),
+                            )
+                          ],
+                        );
+                      }
+                    },
                   ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('MEGAtive'),
-                        Text('Administrator'),
-                      ],
-                    ),
-                  )
+                  FutureBuilder(
+                    builder: (BuildContext context,
+                        AsyncSnapshot<UserData> snapshot) {
+                      if (snapshot.hasData) {
+                        String role = '';
+                        if (snapshot.data.role == 1) {
+                          role = 'Admin';
+                        } else if (snapshot.data.role == 2) {
+                          role = 'Penyelenggara Lomba';
+                        } else if (snapshot.data.role == 3) {
+                          role = 'Pengguna';
+                        } else {
+                          role = 'visitor';
+                        }
+                        return Container(
+                          margin: EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                (snapshot.data.username != null
+                                    ? snapshot.data.username
+                                    : 'Test'),
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              Text(role),
+                            ],
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Column(
+                          children: <Widget>[
+                            Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 60,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: Text('Error: ${snapshot.error}'),
+                            )
+                          ],
+                        );
+                      } else {
+                        return Column(
+                          children: <Widget>[
+                            SizedBox(
+                              child: CircularProgressIndicator(),
+                              width: 60,
+                              height: 60,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Text('Awaiting result...'),
+                            )
+                          ],
+                        );
+                      }
+                    },
+                    future: loadUserData(),
+                  ),
                 ],
               ),
+            ),
+            Divider(
+              thickness: 2,
             ),
             view
           ],

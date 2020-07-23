@@ -10,11 +10,6 @@ class CompetitionService {
   Client client = new Client();
 
   Future<List<CompetitionData>> doGetList() async {
-    Map<String, String> headers = {
-      HttpHeaders.contentTypeHeader: "application/json",
-      HttpHeaders.authorizationHeader: await api.authHeader()
-    };
-
     final response = await client.get('${api.base_url}/competitions/get/',
         headers: await api.getNormalHeaders());
 

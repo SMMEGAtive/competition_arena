@@ -1,4 +1,5 @@
 import 'package:competition_arena/components/app_bar_custom.dart';
+import 'package:competition_arena/http/api_service.dart';
 import 'package:competition_arena/http/user_service.dart';
 import 'package:competition_arena/models/me_data.dart';
 import 'package:competition_arena/models/user_data.dart';
@@ -14,6 +15,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   UserService userService = UserService();
+  ApiServices api = ApiServices();
   Future<UserData> user;
   MeData me;
 
@@ -24,37 +26,10 @@ class _ProfileState extends State<Profile> {
 
   Future<UserData> loadProfile() async {
     me = await userService.doGetLogged();
-    user = userService.doGetOne(me.id);
+    if (me.id != null) {
+      user = userService.doGetOne(me.id);
+    }
     return user;
-  }
-
-  loadProfilePicture() {
-    return Container(
-      height: 200,
-      color: ColorPalette.gray_400,
-      child: Stack(
-        children: <Widget>[
-          Container(
-            height: 200,
-            color: ColorPalette.gray_400,
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: Container(
-              width: 150,
-              height: 150,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: new DecorationImage(
-                  fit: BoxFit.cover,
-                  image: new NetworkImage('https://rhythmega.s-ul.eu/lBdht0Rt'),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -85,150 +60,119 @@ class _ProfileState extends State<Profile> {
         ],
       ),
       body: Container(
-        child: FutureBuilder(
-          builder: (BuildContext context, AsyncSnapshot<UserData> snapshot) {
-            if (snapshot.hasData) {
-              String role = '';
-              if(me.role == 1) {
-                role = 'Admin';
-              } else if(me.role == 2) {
-                role = 'User';
-              } else if(me.role == 3) {
-                role = 'Penyelenggara Lomba';
-              } else {
-                role = 'visitor';
-              }
-              return Align(
-                alignment: Alignment.topCenter,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10.0),
-                        child: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              'https://rhythmega.s-ul.eu/lBdht0Rt'),
-                          radius: 75,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 10.0),
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            (snapshot.data.username != null ? snapshot.data.username : 'Test'),
-                            style: TextStyle(fontSize: 24),
-                          ),
-                          Text(role),
-                        ],
-                      ),
-                    ),
-                    Divider(
-                      thickness: 2.0,
-                    ),
-                    Expanded(
-                      child: DefaultTabController(
-                        length: 3,
-                        child: Scaffold(
-                          appBar: TabBar(
-                            tabs: [
-                              Tab(
-                                child: Text(
-                                  'Description',
-                                  style: TextStyle(color: ColorPalette.black),
-                                ),
-                              ),
-                              Tab(
-                                child: Text(
-                                  'Lomba yang sedang diikuti',
-                                  style: TextStyle(color: ColorPalette.black),
-                                ),
-                              ),
-                              Tab(
-                                child: Text(
-                                  'Lomba yang pernah diikuti',
-                                  style: TextStyle(color: ColorPalette.black),
-                                ),
-                              ),
-                            ],
-                          ),
-                          body: TabBarView(
-                            children: [
-                              Text((snapshot.data.description != null ? snapshot.data.description : 'Test')),
-                              Icon(Icons.directions_transit),
-                              Icon(Icons.directions_bike),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Column(
-                children: <Widget>[
-                  Icon(
-                    Icons.error_outline,
-                    color: Colors.red,
-                    size: 60,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Text('Error: ${snapshot.error}'),
-                  )
-                ],
-              );
-            } else {
-              return Column(
-                children: <Widget>[
-                  SizedBox(
-                    child: CircularProgressIndicator(),
-                    width: 60,
-                    height: 60,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 16),
-                    child: Text('Awaiting result...'),
-                  )
-                ],
-              );
-            }
-          },
-          future: loadProfile(),
-        )
-        /* Align(
+        child: Align(
           alignment: Alignment.topCenter,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Container(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.0),
-                  child: CircleAvatar(
-                    backgroundImage:
-                        NetworkImage('https://rhythmega.s-ul.eu/lBdht0Rt'),
-                    radius: 75,
-                  ),
-                ),
+              FutureBuilder(
+                future: loadProfile(),
+                builder:
+                    (BuildContext context, AsyncSnapshot<UserData> snapshot) {
+                  if (snapshot.hasData) {
+                    return Container(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10.0),
+                        child: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            (snapshot.data != null
+                                ? api.base_url +
+                                    snapshot.data.avatarPath.substring(8)
+                                : 'https://rhythmega.s-ul.eu/lBdht0Rt'),
+                          ),
+                          radius: 75,
+                        ),
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Container(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10.0),
+                        child: CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            'https://rhythmega.s-ul.eu/lBdht0Rt',
+                          ),
+                          radius: 75,
+                        ),
+                      ),
+                    );
+                  } else {
+                    return Column(
+                      children: <Widget>[
+                        SizedBox(
+                          child: CircularProgressIndicator(),
+                          width: 60,
+                          height: 60,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 16),
+                          child: Text('Awaiting result...'),
+                        )
+                      ],
+                    );
+                  }
+                },
               ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 10.0),
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      'MEGAtive',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    Text('Administrator'),
-                  ],
-                ),
+              FutureBuilder(
+                builder:
+                    (BuildContext context, AsyncSnapshot<UserData> snapshot) {
+                  if (snapshot.hasData) {
+                    String role = '';
+                    if (me.role == 1) {
+                      role = 'Admin';
+                    } else if (me.role == 2) {
+                      role = 'Penyelenggara Lomba';
+                    } else if (me.role == 3) {
+                      role = 'Pengguna';
+                    } else {
+                      role = 'visitor';
+                    }
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 10.0),
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            (snapshot.data.username != null
+                                ? snapshot.data.username
+                                : 'Test'),
+                            style: TextStyle(fontSize: 24),
+                          ),
+                          Text(role),
+                        ],
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 10.0),
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            'Bukan Pengguna',
+                            style: TextStyle(fontSize: 24),
+                          ),
+                          Text('Pengunjung'),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Column(
+                      children: <Widget>[
+                        SizedBox(
+                          child: CircularProgressIndicator(),
+                          width: 60,
+                          height: 60,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 16),
+                          child: Text('Awaiting result...'),
+                        )
+                      ],
+                    );
+                  }
+                },
+                future: loadProfile(),
               ),
               Divider(
                 thickness: 2.0,
@@ -261,7 +205,53 @@ class _ProfileState extends State<Profile> {
                     ),
                     body: TabBarView(
                       children: [
-                        Icon(Icons.directions_car),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            FutureBuilder(
+                                future: loadProfile(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<UserData> snapshot) {
+                                  if (snapshot.hasData) {
+                                    return Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10.0, vertical: 15.0),
+                                      child: Text(
+                                        (snapshot.data.description != null
+                                            ? snapshot.data.description
+                                            : 'Tidak ada deskripsi'),
+                                      ),
+                                    );
+                                  } else if (snapshot.hasError) {
+                                    return Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10.0, vertical: 15.0),
+                                      child: Text(
+                                        '',
+                                      ),
+                                    );
+                                  } else {
+                                    return Column(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          child: CircularProgressIndicator(),
+                                          width: 60,
+                                          height: 60,
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.only(top: 16),
+                                          child: Text('Awaiting result...'),
+                                        )
+                                      ],
+                                    );
+                                  }
+                                }),
+                            Divider(
+                              thickness: 2,
+                            )
+                          ],
+                        ),
                         Icon(Icons.directions_transit),
                         Icon(Icons.directions_bike),
                       ],
@@ -271,8 +261,7 @@ class _ProfileState extends State<Profile> {
               )
             ],
           ),
-        ) */
-        ,
+        ),
       ),
     );
   }
